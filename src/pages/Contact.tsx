@@ -1,128 +1,255 @@
 import { motion } from 'framer-motion';
-import { Mail, MapPin, Clock, Send } from 'lucide-react';
+import { Mail, MapPin, Send, Phone, Loader2, Instagram, Facebook, MessageCircle } from 'lucide-react';
+import { useState, useRef } from 'react';
 import Layout from '@/components/layout/Layout';
 import { Button } from '@/components/ui/button';
+import { supabase } from '@/lib/supabase';
+import { toast } from 'sonner';
+import { logActivity } from '@/lib/logger';
+import { Turnstile, type TurnstileInstance } from '@marsidev/react-turnstile';
+import { contactSchema } from '@/lib/validations';
+import PageTransition from '@/components/PageTransition';
 
 const Contact = () => {
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
+  const turnstileRef = useRef<TurnstileInstance>(null);
+  const formRef = useRef<HTMLFormElement>(null);
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const form = e.currentTarget;
+    const formData = new FormData(form);
+    const data = {
+      name: formData.get('name') as string,
+      email: formData.get('email') as string,
+      phone: formData.get('phone') as string,
+      subject: formData.get('subject') as string,
+      message: formData.get('message') as string,
+    };
+
+    // Validate with Zod
+    const result = contactSchema.safeParse(data);
+    if (!result.success) {
+      toast.error(result.error.issues[0].message);
+      return;
+    }
+
+    // Check Turnstile token
+    if (!turnstileToken) {
+      toast.error('Please complete the security check');
+      return;
+    }
+
+    setIsSubmitting(true);
+    try {
+      const { error } = await supabase.from('messages').insert([data]);
+      if (error) throw error;
+      await logActivity('New Message', `Message received from ${data.name} (${data.email})`, 'create');
+      toast.success('Message sent successfully! We will get back to you soon.');
+      form.reset();
+      setTurnstileToken(null);
+      turnstileRef.current?.reset();
+    } catch (error) {
+      console.error('Error sending message:', error);
+      toast.error('Failed to send message. Please try again.');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   return (
-    <Layout>
-      <section className="pt-24 pb-16 md:pt-32 md:pb-24 bg-[#F5F0E6] relative overflow-hidden">
-        {/* Background Glow */}
-        <div className="absolute top-0 left-1/4 w-[400px] h-[400px] bg-[#5CC5B5]/15 rounded-full blur-[120px] pointer-events-none" />
-        <div className="absolute bottom-0 right-1/4 w-[300px] h-[300px] bg-[#E84A8A]/10 rounded-full blur-[100px] pointer-events-none" />
+    <PageTransition>
+      <Layout>
+        <section className="pt-24 pb-20 md:pt-32 md:pb-28 bg-gradient-to-br from-[#FDF8F4] to-[#F5F0E6] relative overflow-hidden">
+          {/* Background Elements - Optimized */}
+          <div className="absolute top-0 right-1/4 w-[500px] h-[500px] bg-[#5CC5B5]/10 rounded-full blur-[80px] pointer-events-none" />
+          <div className="absolute bottom-0 left-1/4 w-[400px] h-[400px] bg-[#E84A8A]/10 rounded-full blur-[70px] pointer-events-none" />
 
-        <div className="container relative mx-auto px-4 max-w-6xl z-10">
-          <motion.div
-            className="mb-14 text-center"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-          >
-            <span className="mb-6 inline-block text-5xl">💌</span>
-            <h1 className="mb-4 text-4xl font-bold text-[#7B4B94] md:text-5xl">
-              Get in <span className="italic text-[#E84A8A]">Touch</span>
-            </h1>
-            <p className="text-[#7B4B94]/70 text-lg">We'd love to hear from you! Drop us a message anytime.</p>
-          </motion.div>
-
-          <div className="mx-auto grid max-w-5xl gap-10 lg:grid-cols-2">
-            {/* Contact Form */}
+          <div className="container relative mx-auto px-4 max-w-7xl z-10">
+            {/* Header */}
             <motion.div
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
+              className="mb-16 text-center"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5 }}
-              className="rounded-3xl border border-[#E84A8A]/15 bg-white p-8 md:p-10 shadow-lg shadow-[#E84A8A]/5"
             >
-              <h2 className="mb-8 text-2xl font-bold text-[#7B4B94]">Send us a message</h2>
-              <form className="space-y-5" onSubmit={(e) => e.preventDefault()}>
-                <div className="grid gap-5 sm:grid-cols-2">
-                  <div>
-                    <label className="mb-2 block text-sm font-semibold text-[#7B4B94]">Name</label>
-                    <input
-                      type="text"
-                      placeholder="Your name"
-                      className="w-full rounded-xl border border-[#E84A8A]/20 bg-[#FDF8F4] px-5 py-3 text-sm text-[#7B4B94] placeholder:text-[#7B4B94]/40 focus:outline-none focus:ring-2 focus:ring-[#E84A8A]/30"
-                    />
+              <div className="inline-flex items-center gap-2 mb-6 px-4 py-2 rounded-full bg-[#5CC5B5]/10 border border-[#5CC5B5]/20">
+                <Mail className="w-4 h-4 text-[#5CC5B5]" />
+                <span className="text-xs font-semibold tracking-wider uppercase text-[#5CC5B5]">Contact Us</span>
+              </div>
+
+              <h1 className="mb-4 text-4xl md:text-6xl font-bold text-[#7B4B94]">
+                Let's Start a <span className="italic text-[#E84A8A]">Conversation</span>
+              </h1>
+              <p className="text-[#7B4B94]/60 text-lg max-w-2xl mx-auto">
+                We're here to help and answer any question you might have. We look forward to hearing from you.
+              </p>
+            </motion.div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
+
+              {/* Left Side - Contact Info */}
+              <motion.div
+                initial={{ opacity: 0, x: -30 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.5 }}
+                className="space-y-8"
+              >
+                {/* Contact Cards */}
+                <div className="space-y-6">
+                  <motion.a
+                    href="tel:+201018405310"
+                    whileHover={{ x: 5 }}
+                    className="flex items-center gap-4 p-6 rounded-2xl bg-white/80 border border-[#E84A8A]/10 hover:border-[#5CC5B5]/30 hover:shadow-lg transition-all group"
+                  >
+                    <div className="w-14 h-14 rounded-xl bg-[#5CC5B5]/10 flex items-center justify-center group-hover:bg-[#5CC5B5]/20 transition-colors">
+                      <Phone className="w-7 h-7 text-[#5CC5B5]" />
+                    </div>
+                    <div>
+                      <p className="text-sm text-[#7B4B94]/60 font-medium mb-1">Call Us</p>
+                      <p className="text-[#7B4B94] font-bold text-lg">+20 10 18405310</p>
+                      <p className="text-xs text-[#7B4B94]/50 mt-1">Sun - Thu: 9AM - 6PM</p>
+                    </div>
+                  </motion.a>
+                </div>
+
+                {/* Social Media */}
+                <div className="bg-white/60 rounded-2xl p-6 border border-[#E84A8A]/10">
+                  <p className="text-[#7B4B94] text-sm font-semibold mb-4">Connect With Us</p>
+                  <div className="flex gap-3">
+                    <motion.a
+                      href="#"
+                      whileHover={{ scale: 1.1, rotate: 5 }}
+                      className="w-12 h-12 rounded-xl bg-gradient-to-br from-[#E84A8A]/10 to-[#E84A8A]/5 border border-[#E84A8A]/20 flex items-center justify-center hover:from-[#E84A8A]/20 hover:to-[#E84A8A]/10 transition-all"
+                    >
+                      <Instagram className="w-5 h-5 text-[#E84A8A]" />
+                    </motion.a>
+                    <motion.a
+                      href="#"
+                      whileHover={{ scale: 1.1, rotate: -5 }}
+                      className="w-12 h-12 rounded-xl bg-gradient-to-br from-[#5CC5B5]/10 to-[#5CC5B5]/5 border border-[#5CC5B5]/20 flex items-center justify-center hover:from-[#5CC5B5]/20 hover:to-[#5CC5B5]/10 transition-all"
+                    >
+                      <Facebook className="w-5 h-5 text-[#5CC5B5]" />
+                    </motion.a>
+                    <motion.a
+                      href="#"
+                      whileHover={{ scale: 1.1, rotate: 5 }}
+                      className="w-12 h-12 rounded-xl bg-gradient-to-br from-[#7B4B94]/10 to-[#7B4B94]/5 border border-[#7B4B94]/20 flex items-center justify-center hover:from-[#7B4B94]/20 hover:to-[#7B4B94]/10 transition-all"
+                    >
+                      <MessageCircle className="w-5 h-5 text-[#7B4B94]" />
+                    </motion.a>
                   </div>
+                </div>
+
+                {/* Decorative Quote */}
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.5 }}
+                  className="hidden lg:block mt-8 p-6 rounded-2xl bg-gradient-to-br from-[#E84A8A]/5 to-transparent border border-[#E84A8A]/10"
+                >
+                  <p className="text-[#7B4B94] italic text-lg mb-2">
+                    "Every message matters to us. We're committed to providing you with the best experience."
+                  </p>
+                  <p className="text-[#E84A8A] font-semibold text-sm">— Aura Melts Team</p>
+                </motion.div>
+              </motion.div>
+
+              {/* Right Side - Contact Form */}
+              <motion.div
+                initial={{ opacity: 0, x: 30 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.5, delay: 0.2 }}
+                className="bg-white rounded-3xl p-8 md:p-10 shadow-xl shadow-[#7B4B94]/10 border border-[#E84A8A]/10"
+              >
+                <h2 className="text-2xl font-bold text-[#7B4B94] mb-6">Send us a Message</h2>
+
+                <form ref={formRef} className="space-y-5" onSubmit={handleSubmit}>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-semibold text-[#7B4B94] mb-2">Name *</label>
+                      <input
+                        name="name"
+                        required
+                        type="text"
+                        placeholder="Your name"
+                        className="w-full rounded-xl border border-[#E84A8A]/15 bg-[#FDF8F4] px-4 py-3 text-[#7B4B94] placeholder:text-[#7B4B94]/40 focus:outline-none focus:ring-2 focus:ring-[#E84A8A]/20 focus:border-[#E84A8A] transition-all"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-semibold text-[#7B4B94] mb-2">Phone</label>
+                      <input
+                        name="phone"
+                        type="tel"
+                        placeholder="+20 123 456 7890"
+                        className="w-full rounded-xl border border-[#E84A8A]/15 bg-[#FDF8F4] px-4 py-3 text-[#7B4B94] placeholder:text-[#7B4B94]/40 focus:outline-none focus:ring-2 focus:ring-[#E84A8A]/20 focus:border-[#E84A8A] transition-all"
+                      />
+                    </div>
+                  </div>
+
                   <div>
-                    <label className="mb-2 block text-sm font-semibold text-[#7B4B94]">Email</label>
+                    <label className="block text-sm font-semibold text-[#7B4B94] mb-2">Email *</label>
                     <input
+                      name="email"
+                      required
                       type="email"
                       placeholder="your@email.com"
-                      className="w-full rounded-xl border border-[#E84A8A]/20 bg-[#FDF8F4] px-5 py-3 text-sm text-[#7B4B94] placeholder:text-[#7B4B94]/40 focus:outline-none focus:ring-2 focus:ring-[#E84A8A]/30"
+                      className="w-full rounded-xl border border-[#E84A8A]/15 bg-[#FDF8F4] px-4 py-3 text-[#7B4B94] placeholder:text-[#7B4B94]/40 focus:outline-none focus:ring-2 focus:ring-[#E84A8A]/20 focus:border-[#E84A8A] transition-all"
                     />
                   </div>
-                </div>
-                <div>
-                  <label className="mb-2 block text-sm font-semibold text-[#7B4B94]">Subject</label>
-                  <input
-                    type="text"
-                    placeholder="What's this about?"
-                    className="w-full rounded-xl border border-[#E84A8A]/20 bg-[#FDF8F4] px-5 py-3 text-sm text-[#7B4B94] placeholder:text-[#7B4B94]/40 focus:outline-none focus:ring-2 focus:ring-[#E84A8A]/30"
-                  />
-                </div>
-                <div>
-                  <label className="mb-2 block text-sm font-semibold text-[#7B4B94]">Message</label>
-                  <textarea
-                    rows={5}
-                    placeholder="Tell us what's on your mind..."
-                    className="w-full rounded-xl border border-[#E84A8A]/20 bg-[#FDF8F4] px-5 py-3 text-sm text-[#7B4B94] placeholder:text-[#7B4B94]/40 focus:outline-none focus:ring-2 focus:ring-[#E84A8A]/30 resize-none"
-                  />
-                </div>
-                <Button
-                  type="submit"
-                  className="h-12 rounded-full px-8 bg-[#E84A8A] hover:bg-[#D43D7A] font-semibold shadow-lg shadow-[#E84A8A]/30"
-                  size="lg"
-                >
-                  <Send className="mr-2 h-4 w-4" />
-                  Send Message
-                </Button>
-              </form>
-            </motion.div>
 
-            {/* Contact Info */}
-            <motion.div
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.5, delay: 0.1 }}
-              className="space-y-5"
-            >
-              <div className="rounded-2xl border border-[#E84A8A]/15 bg-white p-6 shadow-md hover:shadow-lg transition-shadow">
-                <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-xl bg-[#E84A8A]/10">
-                  <Mail className="h-6 w-6 text-[#E84A8A]" />
-                </div>
-                <h3 className="mb-1 text-lg font-bold text-[#7B4B94]">Email Us</h3>
-                <p className="text-[#7B4B94]/70">hello@auramelts.com</p>
-              </div>
+                  <div>
+                    <label className="block text-sm font-semibold text-[#7B4B94] mb-2">Subject *</label>
+                    <input
+                      name="subject"
+                      required
+                      type="text"
+                      placeholder="What's this about?"
+                      className="w-full rounded-xl border border-[#E84A8A]/15 bg-[#FDF8F4] px-4 py-3 text-[#7B4B94] placeholder:text-[#7B4B94]/40 focus:outline-none focus:ring-2 focus:ring-[#E84A8A]/20 focus:border-[#E84A8A] transition-all"
+                    />
+                  </div>
 
-              <div className="rounded-2xl border border-[#E84A8A]/15 bg-white p-6 shadow-md hover:shadow-lg transition-shadow">
-                <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-xl bg-[#5CC5B5]/10">
-                  <MapPin className="h-6 w-6 text-[#5CC5B5]" />
-                </div>
-                <h3 className="mb-1 text-lg font-bold text-[#7B4B94]">Visit Us</h3>
-                <p className="text-[#7B4B94]/70">Based in Egypt — shipping nationwide</p>
-              </div>
+                  <div>
+                    <label className="block text-sm font-semibold text-[#7B4B94] mb-2">Message *</label>
+                    <textarea
+                      name="message"
+                      required
+                      rows={5}
+                      placeholder="Tell us what's on your mind..."
+                      className="w-full rounded-xl border border-[#E84A8A]/15 bg-[#FDF8F4] px-4 py-3 text-[#7B4B94] placeholder:text-[#7B4B94]/40 focus:outline-none focus:ring-2 focus:ring-[#E84A8A]/20 focus:border-[#E84A8A] transition-all resize-none"
+                    />
+                  </div>
 
-              <div className="rounded-2xl border border-[#E84A8A]/15 bg-white p-6 shadow-md hover:shadow-lg transition-shadow">
-                <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-xl bg-[#F5A623]/10">
-                  <Clock className="h-6 w-6 text-[#F5A623]" />
-                </div>
-                <h3 className="mb-1 text-lg font-bold text-[#7B4B94]">Response Time</h3>
-                <p className="text-[#7B4B94]/70">We usually reply within 24 hours</p>
-              </div>
+                  {/* Turnstile CAPTCHA */}
+                  <div className="flex justify-center">
+                    <Turnstile
+                      ref={turnstileRef}
+                      siteKey={import.meta.env.VITE_TURNSTILE_SITE_KEY || '1x00000000000000000000AA'}
+                      onSuccess={setTurnstileToken}
+                      onError={() => setTurnstileToken(null)}
+                      onExpire={() => setTurnstileToken(null)}
+                    />
+                  </div>
 
-              <div className="rounded-2xl border border-[#7B4B94]/20 bg-gradient-to-br from-[#7B4B94]/10 to-[#E84A8A]/10 p-6">
-                <h3 className="mb-2 text-lg font-bold text-[#7B4B94]">Custom Orders? 🎁</h3>
-                <p className="text-[#7B4B94]/70 leading-relaxed">
-                  Looking for wedding favours, corporate gifts, or something special?
-                  We'd love to create something unique for you!
-                </p>
-              </div>
-            </motion.div>
+                  <Button
+                    type="submit"
+                    disabled={isSubmitting}
+                    className="w-full h-12 rounded-xl bg-gradient-to-r from-[#E84A8A] to-[#7B4B94] hover:shadow-lg hover:shadow-[#E84A8A]/30 font-semibold text-sm uppercase tracking-wider transition-all hover:scale-[1.02] disabled:opacity-50"
+                  >
+                    {isSubmitting ? (
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                    ) : (
+                      <>Send Message <Send className="ml-2 h-4 w-4" /></>
+                    )}
+                  </Button>
+                </form>
+              </motion.div>
+            </div>
           </div>
-        </div>
-      </section>
-    </Layout>
+        </section>
+      </Layout>
+    </PageTransition>
   );
 };
 

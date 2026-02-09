@@ -14,20 +14,31 @@ interface QuickAddModalProps {
 
 const QuickAddModal = ({ product, isOpen, onClose }: QuickAddModalProps) => {
     const { addItem } = useCart();
+
     const [quantity, setQuantity] = useState(1);
-    const [selectedSize, setSelectedSize] = useState<string | undefined>();
+    const [selectedVariant, setSelectedVariant] = useState<any>(null);
 
     useEffect(() => {
         if (product) {
+            console.log('QuickAddModal - Product:', product);
+            console.log('QuickAddModal - Variants:', product.variants);
+            console.log('QuickAddModal - Variants length:', product.variants?.length);
             setQuantity(1);
-            setSelectedSize(product.sizes?.[0]);
+            // Set first variant as default if variants exist
+            if (product.variants && product.variants.length > 0) {
+                setSelectedVariant(product.variants[0]);
+                console.log('QuickAddModal - Selected first variant:', product.variants[0]);
+            } else {
+                setSelectedVariant(null);
+                console.log('QuickAddModal - No variants found');
+            }
         }
     }, [product, isOpen]);
 
     if (!product) return null;
 
     const handleAddToCart = () => {
-        addItem(product, quantity, selectedSize);
+        addItem(product, quantity, selectedVariant || undefined);
         onClose();
     };
 
@@ -72,30 +83,30 @@ const QuickAddModal = ({ product, isOpen, onClose }: QuickAddModalProps) => {
 
                         <div className="mb-6">
                             <p className="text-2xl font-bold text-[#FF85A1] mb-4">
-                                {product.price.toLocaleString()} EGP
+                                {selectedVariant ? selectedVariant.price.toLocaleString() : product.price.toLocaleString()} EGP
                             </p>
                             <p className="text-sm text-[#8E5B6F]/80 leading-relaxed line-clamp-3">
                                 {product.description}
                             </p>
                         </div>
 
-                        {/* Size Selection */}
-                        {product.sizes && product.sizes.length > 0 && (
+                        {/* Variants Selection */}
+                        {product.variants && product.variants.length > 0 && (
                             <div className="mb-6">
                                 <label className="mb-3 block text-xs font-bold uppercase tracking-widest text-[#4A3B4E]">
-                                    Select Size
+                                    Options
                                 </label>
                                 <div className="flex flex-wrap gap-2">
-                                    {product.sizes.map((size) => (
+                                    {product.variants.map((variant: any) => (
                                         <button
-                                            key={size}
-                                            onClick={() => setSelectedSize(size)}
-                                            className={`rounded-full border px-4 py-2 text-xs font-bold transition-all duration-300 ${selectedSize === size
+                                            key={variant.name}
+                                            onClick={() => setSelectedVariant(variant)}
+                                            className={`rounded-full border px-4 py-2 text-xs font-bold transition-all duration-300 ${selectedVariant?.name === variant.name
                                                 ? 'border-primary bg-primary text-white shadow-md shadow-primary/20'
                                                 : 'border-[#E6C9C9] bg-white text-[#8E5B6F] hover:border-primary'
                                                 }`}
                                         >
-                                            {size}
+                                            {variant.name} - {variant.price} EGP
                                         </button>
                                     ))}
                                 </div>
@@ -117,14 +128,20 @@ const QuickAddModal = ({ product, isOpen, onClose }: QuickAddModalProps) => {
                                     </button>
                                     <span className="w-6 text-center font-bold text-[#4A3B4E]">{quantity}</span>
                                     <button
-                                        onClick={() => setQuantity(quantity + 1)}
-                                        className="flex h-8 w-8 items-center justify-center rounded-full text-[#8E5B6F] transition-colors hover:bg-[#FFF9F0]"
+                                        onClick={() => setQuantity(Math.min(quantity + 1, product.stock || 99))}
+                                        disabled={quantity >= (product.stock || 99)}
+                                        className="flex h-8 w-8 items-center justify-center rounded-full text-[#8E5B6F] transition-colors hover:bg-[#FFF9F0] disabled:opacity-30 disabled:cursor-not-allowed"
                                     >
                                         <Plus className="h-4 w-4" />
                                     </button>
                                 </div>
-                                <div className="text-sm font-medium text-[#8E5B6F]/60">
-                                    Total: <span className="text-[#FF85A1] font-bold">{(product.price * quantity).toLocaleString()} EGP</span>
+                                <div className="flex flex-col">
+                                    <div className="text-sm font-medium text-[#8E5B6F]/60">
+                                        Total: <span className="text-[#FF85A1] font-bold">{((selectedVariant?.price || product.price) * quantity).toLocaleString()} EGP</span>
+                                    </div>
+                                    {(product.stock || 0) > 0 && (product.stock || 0) < 10 && (
+                                        <span className="text-[10px] font-bold text-[#FF85A1]">Only {product.stock} left!</span>
+                                    )}
                                 </div>
                             </div>
                         </div>

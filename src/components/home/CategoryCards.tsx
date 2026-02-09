@@ -1,11 +1,23 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { categories } from '@/data/products';
+// import { categories } from '@/data/products';
 import { ArrowRight } from 'lucide-react';
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/lib/supabase';
 
 const CategoryCards = () => {
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
+
+  const { data: categories = [] } = useQuery({
+    queryKey: ['categories'],
+    queryFn: async () => {
+      const { data, error } = await supabase.from('categories').select('*').order('name').limit(6);
+      if (error) console.error('Error fetching categories:', error);
+      return data || [];
+    },
+    staleTime: 1000 * 60 * 10,
+  });
 
   return (
     <section className="relative py-24 md:py-32 overflow-hidden bg-[#FDF8F4]">
@@ -37,7 +49,7 @@ const CategoryCards = () => {
 
         {/* Grid */}
         <div className="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-6">
-          {categories.map((cat, i) => {
+          {categories.map((cat: any, i: number) => {
             const isHovered = hoveredIndex === i;
 
             return (
@@ -49,7 +61,7 @@ const CategoryCards = () => {
                 transition={{ duration: 0.5, delay: i * 0.1 }}
               >
                 <Link
-                  to={`/products?category=${cat.id}`}
+                  to={`/products?category=${cat.slug}`}
                   onMouseEnter={() => setHoveredIndex(i)}
                   onMouseLeave={() => setHoveredIndex(null)}
                   className="group relative block h-full"
@@ -59,48 +71,62 @@ const CategoryCards = () => {
                     transition={{ type: 'spring', stiffness: 300, damping: 20 }}
                     className="relative h-full min-h-[200px] md:min-h-[260px] p-6 md:p-8 rounded-3xl bg-white overflow-hidden border border-[#E84A8A]/20 shadow-lg shadow-[#E84A8A]/10 hover:shadow-xl hover:shadow-[#E84A8A]/15 transition-all duration-300"
                   >
-                    {/* Gradient Overlay */}
-                    <div className="absolute inset-0 bg-gradient-to-br from-[#5CC5B5]/5 to-[#E84A8A]/5 opacity-60" />
+                    {/* Image Background */}
+                    {cat.image && (
+                      <div className="absolute inset-0 z-0">
+                        <img
+                          src={cat.image}
+                          alt={cat.name}
+                          className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                        />
 
-                    {/* Accent Circle */}
-                    <motion.div
-                      animate={{
-                        scale: isHovered ? 1.2 : 1,
-                        opacity: isHovered ? 0.25 : 0.1,
-                      }}
-                      transition={{ duration: 0.4 }}
-                      className="absolute -top-10 -right-10 w-32 h-32 rounded-full bg-[#5CC5B5]"
-                    />
-
-                    {/* Content */}
-                    <div className="relative z-10 h-full flex flex-col justify-between">
-                      {/* Icon */}
-                      <div className="mb-4">
-                        <motion.div
-                          whileHover={{ scale: 1.05, rotate: 3 }}
-                          className="inline-flex items-center justify-center w-16 h-16 md:w-20 md:h-20 rounded-2xl bg-[#5CC5B5]/10 shadow-md border border-[#5CC5B5]/20"
-                        >
-                          <span className="text-4xl md:text-5xl">{cat.icon}</span>
-                        </motion.div>
                       </div>
+                    )}
 
-                      {/* Text */}
-                      <div>
-                        <h3 className="text-xl md:text-2xl font-bold text-[#7B4B94] mb-3">
-                          {cat.name}
-                        </h3>
+                    {!cat.image && (
+                      <div className="absolute inset-0 bg-gradient-to-br from-[#5CC5B5]/5 to-[#E84A8A]/5 opacity-60" />
+                    )}
 
-                        {/* Explore Link */}
-                        <div className="flex items-center gap-2">
-                          <span className="text-sm font-semibold text-[#E84A8A]">
-                            Explore
-                          </span>
+                    {/* Accent Circle - Only if no image */}
+                    {!cat.image && (
+                      <motion.div
+                        animate={{
+                          scale: isHovered ? 1.2 : 1,
+                          opacity: isHovered ? 0.25 : 0.1,
+                        }}
+                        transition={{ duration: 0.4 }}
+                        className="absolute -top-10 -right-10 w-32 h-32 rounded-full bg-[#5CC5B5]"
+                      />
+                    )}
+
+                    {/* Content - Floating Glass Island */}
+                    <div className="relative z-10 h-full flex flex-col justify-end p-4">
+                      {/* Icon Fallback - Only show if NO image */}
+                      {!cat.image && (
+                        <div className="mb-auto pt-6 flex justify-center">
                           <motion.div
-                            animate={{ x: isHovered ? 4 : 0 }}
-                            transition={{ type: 'spring', stiffness: 400, damping: 20 }}
+                            whileHover={{ scale: 1.05, rotate: 3 }}
+                            className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-white shadow-sm border border-[#E84A8A]/10 text-4xl"
                           >
-                            <ArrowRight className="w-4 h-4 text-[#E84A8A]" />
+                            {cat.icon || '✨'}
                           </motion.div>
+                        </div>
+                      )}
+
+                      {/* Glass Info Box */}
+                      <div className="bg-white/90 backdrop-blur-md border border-white/50 p-4 rounded-2xl shadow-sm translate-y-2 group-hover:translate-y-0 transition-transform duration-300">
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <h3 className="text-xl font-bold text-[#2A2A2A] leading-tight">
+                              {cat.name}
+                            </h3>
+                            <p className="text-xs font-semibold text-[#E84A8A] mt-1 tracking-wide uppercase">
+                              Shop Collection
+                            </p>
+                          </div>
+                          <div className="w-10 h-10 rounded-full bg-[#E84A8A] flex items-center justify-center text-white shrink-0 group-hover:scale-110 transition-transform shadow-md shadow-[#E84A8A]/20">
+                            <ArrowRight className="w-5 h-5 -rotate-45 group-hover:rotate-0 transition-transform" />
+                          </div>
                         </div>
                       </div>
                     </div>

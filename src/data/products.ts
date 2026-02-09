@@ -12,6 +12,8 @@ export interface Product {
   featured?: boolean;
   bestSeller?: boolean;
   newArrival?: boolean;
+  stock?: number;
+  variants?: { name: string; price: number; stock?: number }[];
 }
 
 export const categories = [
@@ -30,9 +32,15 @@ export const products: Product[] = [
     image: 'https://images.unsplash.com/photo-1602874801007-bd458bb1b8b6?w=500&h=500&fit=crop',
     category: 'candles',
     scent: 'Vanilla & Amber',
-    sizes: ['Small (4oz)', 'Medium (8oz)', 'Large (12oz)'],
+    variants: [
+      { name: 'Small (4oz)', price: 450, stock: 10 },
+      { name: 'Medium (8oz)', price: 650, stock: 15 },
+      { name: 'Large (12oz)', price: 850, stock: 5 }
+    ],
+    sizes: ['Small (4oz)', 'Medium (8oz)', 'Large (12oz)'], // Keep for backward compat if needed, or remove
     featured: true,
     bestSeller: true,
+    stock: 30
   },
   {
     id: '2',
@@ -42,8 +50,13 @@ export const products: Product[] = [
     image: 'https://images.unsplash.com/photo-1603006905003-be475563bc59?w=500&h=500&fit=crop',
     category: 'candles',
     scent: 'Lavender & Eucalyptus',
-    sizes: ['Small (4oz)', 'Medium (8oz)', 'Large (12oz)'],
+    variants: [
+      { name: 'Small (4oz)', price: 420 },
+      { name: 'Medium (8oz)', price: 620 },
+      { name: 'Large (12oz)', price: 820 }
+    ],
     featured: true,
+    stock: 20
   },
   {
     id: '3',
@@ -53,8 +66,13 @@ export const products: Product[] = [
     image: 'https://images.unsplash.com/photo-1616401784845-180882c0092e?w=500&h=500&fit=crop',
     category: 'candles',
     scent: 'Rose & Musk',
-    sizes: ['Small (4oz)', 'Medium (8oz)', 'Large (12oz)'],
+    variants: [
+      { name: 'Small (4oz)', price: 550 },
+      { name: 'Medium (8oz)', price: 750 },
+      { name: 'Large (12oz)', price: 950 }
+    ],
     newArrival: true,
+    stock: 10
   },
   {
     id: '4',
@@ -64,8 +82,13 @@ export const products: Product[] = [
     image: 'https://images.unsplash.com/photo-1608181831718-c9ffd6764abe?w=500&h=500&fit=crop',
     category: 'candles',
     scent: 'Cinnamon & Clove',
-    sizes: ['Small (4oz)', 'Medium (8oz)', 'Large (12oz)'],
+    variants: [
+      { name: 'Small (4oz)', price: 440 },
+      { name: 'Medium (8oz)', price: 640 },
+      { name: 'Large (12oz)', price: 840 }
+    ],
     bestSeller: true,
+    stock: 0
   },
   {
     id: '5',

@@ -5,9 +5,12 @@ import { useCart } from '@/contexts/CartContext';
 import { Button } from '@/components/ui/button';
 import logo from '@/assets/logo.jpeg';
 import NavHoverLink from './NavHoverLink';
-import { categories, products } from '@/data/products';
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/lib/supabase';
+// Removed hardcoded imports
+// import { categories, products } from '@/data/products';
 
-import { Facebook, Instagram, Twitter, Search, ShoppingBag, Menu, X, ChevronDown } from 'lucide-react';
+import { Facebook, Instagram, Twitter, Search, ShoppingBag, Menu, X, ChevronDown, Loader2 } from 'lucide-react';
 
 const navLinks = [
   { to: '/', label: 'Home' },
@@ -21,10 +24,10 @@ const Navbar = () => {
   const [isMobileOpen, setIsMobileOpen] = useState(false);
   const [isCategoriesOpen, setIsCategoriesOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
-  const [searchResults, setSearchResults] = useState<typeof products>([]);
+  const [searchResults, setSearchResults] = useState<any[]>([]); // Dynamic results
   const [isSearchFocused, setIsSearchFocused] = useState(false);
   const [isMobileSearchOpen, setIsMobileSearchOpen] = useState(false);
-  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  const [isSearching, setIsSearching] = useState(false);
 
   const { totalItems, setIsCartOpen } = useCart();
   const location = useLocation();
@@ -36,6 +39,17 @@ const Navbar = () => {
   const [isExpanded, setIsExpanded] = useState(true);
   const [isScrolled, setIsScrolled] = useState(false);
   const lastScrollY = useRef(0);
+
+  // Fetch Categories from Supabase
+  const { data: categories = [] } = useQuery({
+    queryKey: ['categories'],
+    queryFn: async () => {
+      const { data, error } = await supabase.from('categories').select('*').order('name');
+      if (error) console.error('Error fetching categories:', error);
+      return data || [];
+    },
+    staleTime: 1000 * 60 * 5, // Cache for 5 minutes
+  });
 
   useMotionValueEvent(scrollY, "change", (latest) => {
     setIsScrolled(latest > 20);
@@ -76,23 +90,23 @@ const Navbar = () => {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  // Search functionality
-  const handleSearch = (query: string) => {
+  // Search functionality (Supabase)
+  const handleSearch = async (query: string) => {
     setSearchQuery(query);
     if (query.trim().length > 1) {
-      const filtered = products.filter(product => {
-        const matchesQuery =
-          product.name.toLowerCase().includes(query.toLowerCase()) ||
-          product.description.toLowerCase().includes(query.toLowerCase()) ||
-          product.scent?.toLowerCase().includes(query.toLowerCase());
-
-        const matchesCategory = selectedCategory
-          ? product.category === selectedCategory
-          : true;
-
-        return matchesQuery && matchesCategory;
-      });
-      setSearchResults(filtered.slice(0, 5));
+      setIsSearching(true);
+      try {
+        const { data } = await supabase
+          .from('products')
+          .select('*')
+          .ilike('name', `%${query}%`)
+          .limit(5);
+        setSearchResults(data || []);
+      } catch (error) {
+        console.error('Search error:', error);
+      } finally {
+        setIsSearching(false);
+      }
     } else {
       setSearchResults([]);
     }
@@ -105,11 +119,12 @@ const Navbar = () => {
       setSearchQuery('');
       setSearchResults([]);
       setIsSearchFocused(false);
+      setIsMobileSearchOpen(false);
     }
   };
 
-  const handleCategoryClick = (categoryId: string) => {
-    navigate(`/products?category=${categoryId}`);
+  const handleCategoryClick = (categorySlug: string) => {
+    navigate(`/products?category=${categorySlug}`);
     setIsCategoriesOpen(false);
     setIsMobileOpen(false);
   };
@@ -151,7 +166,7 @@ const Navbar = () => {
                 <form onSubmit={handleSearchSubmit} className="relative w-full max-w-xl">
                   <div className="relative flex items-center overflow-hidden rounded-full bg-white border border-[#E84A8A]/20 shadow-sm focus-within:border-[#E84A8A]/40 focus-within:shadow-md focus-within:shadow-[#E84A8A]/10 transition-all">
                     <div className="pl-5 text-[#7B4B94]/40">
-                      <Search className="h-5 w-5" />
+                      {isSearching ? <Loader2 className="h-5 w-5 animate-spin" /> : <Search className="h-5 w-5" />}
                     </div>
                     <input
                       type="text"
@@ -183,11 +198,15 @@ const Navbar = () => {
                       {searchResults.map((product) => (
                         <Link
                           key={product.id}
-                          to={`/products/${product.id}`}
+                          to={`/products?search=${encodeURIComponent(product.name)}`} // Or /products/id if explicit
                           onClick={() => { setSearchQuery(''); setSearchResults([]); setIsSearchFocused(false); }}
                           className="flex items-center gap-3 px-2 py-3 hover:bg-[#E84A8A]/10 transition-colors border-b border-[#E84A8A]/5 last:border-b-0"
                         >
-                          <img src={product.image} alt={product.name} className="w-12 h-12 rounded-lg object-cover shadow-sm" />
+                          <img
+                            src={product.image || 'https://images.unsplash.com/photo-1602874801007-bd458bb1b8b6?w=100'}
+                            alt={product.name}
+                            className="w-12 h-12 rounded-lg object-cover shadow-sm"
+                          />
                           <div className="flex-1 min-w-0">
                             <p className="font-semibold text-[#7B4B94] text-sm truncate">{product.name}</p>
                             <p className="text-xs text-[#7B4B94]/60">{product.scent}</p>
@@ -268,16 +287,24 @@ const Navbar = () => {
                     className="absolute top-full left-0 mt-3 w-64 bg-white rounded-2xl border border-[#E84A8A]/15 shadow-2xl z-50 overflow-hidden"
                   >
                     <div className="p-2">
-                      {categories.map((cat, index) => (
+                      {/* Dynamic Categories */}
+                      {categories.map((cat: any, index: number) => (
                         <motion.button
                           key={cat.id}
                           initial={{ opacity: 0, x: -10 }}
                           animate={{ opacity: 1, x: 0 }}
                           transition={{ delay: index * 0.05 }}
-                          onClick={() => handleCategoryClick(cat.id)}
+                          onClick={() => handleCategoryClick(cat.slug)}
                           className="w-full flex items-center gap-4 px-4 py-3 rounded-xl hover:bg-[#E84A8A]/5 transition-all group"
                         >
-                          <span className="text-2xl group-hover:scale-110 transition-transform">{cat.icon}</span>
+                          {/* Image or Icon */}
+                          <div className="w-12 h-12 rounded-lg bg-[#E84A8A]/5 flex items-center justify-center overflow-hidden shrink-0 group-hover:scale-105 transition-transform">
+                            {cat.image ? (
+                              <img src={cat.image} alt={cat.name} className="w-full h-full object-cover" />
+                            ) : (
+                              <span className="text-2xl">{cat.icon || '✨'}</span>
+                            )}
+                          </div>
                           <div className="text-left">
                             <p className="font-semibold text-[#7B4B94] group-hover:text-[#E84A8A] transition-colors">{cat.name}</p>
                             <p className="text-xs text-[#7B4B94]/50">{cat.description}</p>
@@ -311,26 +338,6 @@ const Navbar = () => {
             </nav>
 
             <div className="flex items-center gap-4 xl:gap-6">
-              <AnimatePresence mode="wait">
-                {isExpanded ? (
-                  <motion.div
-                    key="support"
-                    initial={{ opacity: 0, x: 10 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    exit={{ opacity: 0, x: 10 }}
-                    className="hidden xl:flex items-center gap-3 text-[#7B4B94]"
-                  >
-                    <div className="flex h-9 w-9 items-center justify-center rounded-full bg-[#5CC5B5]/20">
-                      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" /></svg>
-                    </div>
-                    <a href="tel:+201018405310" className="flex flex-col hover:opacity-80 transition-opacity">
-                      <span className="text-[9px] font-bold uppercase tracking-wider opacity-60">24/7 Support</span>
-                      <span className="font-body text-xs font-bold tracking-wide">+20 10 18405310</span>
-                    </a>
-                  </motion.div>
-                ) : null}
-              </AnimatePresence>
-
               <button
                 className="group flex items-center gap-2 text-[#7B4B94] hover:text-[#E84A8A] transition-all relative"
                 onClick={() => setIsCartOpen(true)}
@@ -361,7 +368,7 @@ const Navbar = () => {
             animate={{ y: 0 }}
             exit={{ y: '-100%' }}
             transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-            className="fixed inset-0 z-[200] flex flex-col bg-[#FDF8F4] md:hidden shadow-2xl overflow-y-auto"
+            className="fixed inset-0 z-[200] flex flex-col bg-[#FDF8F4] lg:hidden shadow-2xl overflow-y-auto"
           >
             {/* Menu Header */}
             <div className="flex h-20 shrink-0 items-center justify-between px-4 border-b border-[#E84A8A]/10 bg-[#FDF8F4]">
@@ -415,7 +422,7 @@ const Navbar = () => {
                 ))}
               </nav>
 
-              {/* Mobile Categories */}
+              {/* Mobile Categories - Dynamic */}
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -424,13 +431,19 @@ const Navbar = () => {
               >
                 <h3 className="text-sm font-bold uppercase tracking-widest text-[#7B4B94]/50 mb-4">Shop by Category</h3>
                 <div className="grid grid-cols-2 gap-3">
-                  {categories.map((cat) => (
+                  {categories.map((cat: any) => (
                     <button
                       key={cat.id}
-                      onClick={() => handleCategoryClick(cat.id)}
+                      onClick={() => handleCategoryClick(cat.slug)}
                       className="flex items-center gap-3 p-4 bg-white rounded-2xl border border-[#E84A8A]/15 shadow-sm hover:shadow-md transition-all"
                     >
-                      <span className="text-2xl">{cat.icon}</span>
+                      <div className="w-10 h-10 rounded-lg bg-[#E84A8A]/5 flex items-center justify-center overflow-hidden shrink-0">
+                        {cat.image ? (
+                          <img src={cat.image} alt={cat.name} className="w-full h-full object-cover" />
+                        ) : (
+                          <span className="text-2xl">{cat.icon || '✨'}</span>
+                        )}
+                      </div>
                       <span className="font-semibold text-[#7B4B94] text-sm">{cat.name}</span>
                     </button>
                   ))}
@@ -487,7 +500,9 @@ const Navbar = () => {
               </button>
               <form onSubmit={handleSearchSubmit} className="flex-1">
                 <div className="relative flex items-center bg-white rounded-full border border-[#E84A8A]/20 px-4 py-2">
-                  <Search className="h-5 w-5 text-[#7B4B94]/40" />
+                  <div className="mr-2">
+                    {isSearching ? <Loader2 className="h-5 w-5 animate-spin text-[#7B4B94]/40" /> : <Search className="h-5 w-5 text-[#7B4B94]/40" />}
+                  </div>
                   <input
                     autoFocus
                     type="text"
@@ -513,7 +528,7 @@ const Navbar = () => {
                         {searchResults.map((product) => (
                           <Link
                             key={product.id}
-                            to={`/products/${product.id}`}
+                            to={`/products?search=${encodeURIComponent(product.name)}`}
                             onClick={() => {
                               setIsMobileSearchOpen(false);
                               setSearchQuery('');
@@ -521,7 +536,7 @@ const Navbar = () => {
                             }}
                             className="flex items-center gap-4 p-3 bg-white rounded-2xl border border-[#E84A8A]/10 shadow-sm"
                           >
-                            <img src={product.image} alt={product.name} className="w-16 h-16 rounded-xl object-cover" />
+                            <img src={product.image || 'https://images.unsplash.com/photo-1602874801007-bd458bb1b8b6?w=100'} alt={product.name} className="w-16 h-16 rounded-xl object-cover" />
                             <div className="flex-1 min-w-0">
                               <p className="font-bold text-[#7B4B94]">{product.name}</p>
                               <p className="text-xs text-[#7B4B94]/60 truncate">{product.scent}</p>

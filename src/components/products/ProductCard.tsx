@@ -26,7 +26,7 @@ const ProductCard = React.memo(({ product, index = 0, onQuickAdd }: ProductCardP
                         <img
                             src={product.image}
                             alt={product.name}
-                            className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
+                            className={`h-full w-full object-cover transition-transform duration-700 group-hover:scale-110 ${product.stock === 0 ? 'grayscale opacity-60' : ''}`}
                         />
                         <div className="absolute inset-0 bg-black/5 group-hover:bg-black/0 transition-colors duration-300" />
 
@@ -40,11 +40,17 @@ const ProductCard = React.memo(({ product, index = 0, onQuickAdd }: ProductCardP
                                 New Arrival
                             </span>
                         )}
+                        {product.stock === 0 && (
+                            <span className="absolute right-4 top-4 rounded-full bg-black/60 backdrop-blur-md px-4 py-1.5 text-[10px] font-bold uppercase tracking-wider text-white shadow-lg border border-white/10">
+                                Out of Stock
+                            </span>
+                        )}
 
                         {/* Hover Quick Add Overlay */}
                         <div className="absolute inset-x-0 bottom-0 p-4 translate-y-full group-hover:translate-y-0 transition-transform duration-500">
                             <Button
-                                className="w-full rounded-full bg-white/90 backdrop-blur-md text-[#4A3B4E] hover:bg-white hover:text-primary border-none shadow-xl font-bold"
+                                className="w-full rounded-full bg-white/90 backdrop-blur-md text-[#4A3B4E] hover:bg-white hover:text-primary border-none shadow-xl font-bold disabled:opacity-50 disabled:cursor-not-allowed"
+                                disabled={product.stock === 0}
                                 onClick={(e) => {
                                     e.preventDefault();
                                     onQuickAdd(product);

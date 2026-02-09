@@ -6,20 +6,24 @@ import BrandStory from '@/components/home/BrandStory';
 import Testimonials from '@/components/home/Testimonials';
 import FeedbackForm from '@/components/home/FeedbackForm';
 import MiniFAQ from '@/components/home/MiniFAQ';
-import Newsletter from '@/components/home/Newsletter';
+import ContactSection from '@/components/home/ContactSection';
+import PageTransition from '@/components/PageTransition';
+// import Newsletter from '@/components/home/Newsletter';
 
 const Index = () => {
   return (
-    <Layout>
-      <HeroSection />
-      <FeaturedProducts />
-      <CategoryCards />
-      <BrandStory />
-      <Testimonials />
-      <FeedbackForm />
-      <MiniFAQ />
-      <Newsletter />
-    </Layout>
+    <PageTransition>
+      <Layout>
+        <HeroSection />
+        <FeaturedProducts />
+        <CategoryCards />
+        <BrandStory />
+        <Testimonials />
+        <FeedbackForm />
+        <MiniFAQ />
+        <ContactSection />
+      </Layout>
+    </PageTransition>
   );
 };
 

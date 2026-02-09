@@ -1,16 +1,47 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { getFeaturedProducts, Product } from '@/data/products';
+import { Product } from '@/data/products';
 import { Button } from '@/components/ui/button';
 import ProductCard from '../products/ProductCard';
 import QuickAddModal from '../products/QuickAddModal';
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, Loader2 } from 'lucide-react';
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/lib/supabase';
 
 const FeaturedProducts = () => {
-  const featured = getFeaturedProducts();
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const { data: featured = [], isLoading } = useQuery({
+    queryKey: ['featured-products'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('products')
+        .select('*')
+        .eq('featured', true)
+        .limit(4);
+
+      if (error) throw error;
+
+      // Map Supabase data to Product interface
+      return data.map((p: any) => ({
+        id: p.id,
+        name: p.name,
+        description: p.description,
+        price: p.price,
+        image: p.image,
+        category: 'candles', // Default fallback
+        scent: p.scent,
+        featured: p.featured,
+        bestSeller: p.is_best_seller,
+        // Simple logic for new arrival: created in last 30 days
+        newArrival: new Date(p.created_at) > new Date(Date.now() - 30 * 24 * 60 * 60 * 1000),
+        variants: p.variants || [],
+        stock: p.stock || 0
+      })) as Product[];
+    }
+  });
 
   const handleQuickAdd = (product: Product) => {
     setSelectedProduct(product);
@@ -55,16 +86,22 @@ const FeaturedProducts = () => {
           </motion.p>
         </div>
 
-        <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
-          {featured.slice(0, 4).map((product, index) => (
-            <ProductCard
-              key={product.id}
-              product={product}
-              index={index}
-              onQuickAdd={handleQuickAdd}
-            />
-          ))}
-        </div>
+        {isLoading ? (
+          <div className="flex justify-center py-20">
+            <Loader2 className="w-8 h-8 animate-spin text-[#7B4B94]" />
+          </div>
+        ) : (
+          <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
+            {featured.slice(0, 4).map((product, index) => (
+              <ProductCard
+                key={product.id}
+                product={product}
+                index={index}
+                onQuickAdd={handleQuickAdd}
+              />
+            ))}
+          </div>
+        )}
 
         <motion.div
           initial={{ opacity: 0, y: 20 }}

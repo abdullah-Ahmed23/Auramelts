@@ -67,7 +67,7 @@ const Footer = () => {
 
         <div className="mt-10 flex flex-col items-center gap-2 border-t border-border pt-6 text-center">
           <p className="flex items-center gap-1 text-sm text-muted-foreground">
-            Made with <Heart className="h-3 w-3 fill-primary text-primary" /> by Abdullah Ahmed
+            Made with <Heart className="h-3 w-3 fill-primary text-primary" /> by <a href="https://www.facebook.com/profile.php?id=100035910953594" target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors">Abdullah Ahmed</a>
           </p>
           <p className="text-xs text-muted-foreground">© {new Date().getFullYear()} Aura Melts. All rights reserved.</p>
         </div>
