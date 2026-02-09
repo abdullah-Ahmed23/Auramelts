@@ -1,8 +1,30 @@
-
 import { createClient } from '@supabase/supabase-js';
+import * as fs from 'fs';
+import * as path from 'path';
 
-const supabaseUrl = 'https://hxtrovtqsmqwroxpdauv.supabase.co';
-const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh4dHJvdnRxc21xd3JveHBkYXV2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzAzOTcyMDIsImV4cCI6MjA4NTk3MzIwMn0.zJI8ygMe2KQDv6hvyaYz_pevzXku3Ng_qLgDLYEXLFw';
+function getEnv() {
+    try {
+        const envPath = path.resolve(process.cwd(), '.env');
+        const envContent = fs.readFileSync(envPath, 'utf-8');
+        const env: Record<string, string> = {};
+        envContent.split('\n').forEach(line => {
+            const [key, value] = line.split('=');
+            if (key && value) env[key.trim()] = value.trim();
+        });
+        return env;
+    } catch (e) {
+        return {};
+    }
+}
+
+const env = getEnv();
+const supabaseUrl = env.VITE_SUPABASE_URL;
+const supabaseAnonKey = env.VITE_SUPABASE_ANON_KEY;
+
+if (!supabaseUrl || !supabaseAnonKey) {
+    console.error('Error: VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY must be set in .env');
+    process.exit(1);
+}
 
 export const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
