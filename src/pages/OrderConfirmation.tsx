@@ -22,20 +22,33 @@ const OrderConfirmation = () => {
             }
 
             try {
-                // Fetch order and items
-                const { data: orderData, error: orderError } = await supabase
-                    .from('orders')
-                    .select('*, order_items:order_items(*, products:products(title:name, price, image))')
-                    .eq('id', orderId)
-                    .single();
+                let fetchedOrder = null;
 
-                if (orderError || !orderData) throw orderError;
+                // 1. Try Secure RPC (works for guest users)
+                const { data: rpcData, error: rpcError } = await supabase
+                    .rpc('get_order_details', { p_order_id: orderId });
 
-                setOrder(orderData);
+                if (!rpcError && rpcData) {
+                    fetchedOrder = rpcData;
+                } else {
+                    // 2. Fallback to standard select (works for admins/owners) if RPC fails/missing
+                    console.log("RPC fetch failed, falling back to standard select:", rpcError?.message);
+                    const { data: orderData, error: orderError } = await supabase
+                        .from('orders')
+                        .select('*, order_items:order_items(*, products:products(title:name, price, image))')
+                        .eq('id', orderId)
+                        .single();
+
+                    if (orderError) throw orderError;
+                    fetchedOrder = orderData;
+                }
+
+                if (!fetchedOrder) throw new Error("Order not found");
+
+                setOrder(fetchedOrder);
 
                 // Transform items to match expected structure
-                // effectively the same structure as select result but ensure compatibility
-                setItems(orderData.order_items.map((item: any) => ({
+                setItems(fetchedOrder.order_items.map((item: any) => ({
                     ...item,
                     product: item.products, // Map nested product to expected prop
                     variant: item.variant_name ? { name: item.variant_name, price: item.price } : null // Construct minimal variant obj
