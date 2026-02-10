@@ -123,7 +123,20 @@ const CheckoutModal = ({ isOpen, onClose }: CheckoutModalProps) => {
             // Navigate to Order Confirmation / Invoice
             navigate('/order-confirmation', {
                 state: {
-                    order: data.order || { ...formData, id: orderId, total_amount: totalPrice, created_at: new Date().toISOString(), is_paid: false }, // Fallback if data.order is missing structure
+                    order: {
+                        id: orderId,
+                        created_at: new Date().toISOString(),
+                        total_amount: totalPrice,
+                        is_paid: false,
+                        // Map form data to database column names
+                        customer_name: formData.name,
+                        customer_email: formData.email,
+                        customer_phone: formData.phone,
+                        address: formData.address,
+                        governorate: formData.governorate,
+                        city: formData.city,
+                        payment_method: formData.paymentMethod
+                    },
                     items: items
                 }
             });

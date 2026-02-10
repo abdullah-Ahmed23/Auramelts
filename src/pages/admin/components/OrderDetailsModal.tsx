@@ -339,8 +339,9 @@ const OrderDetailsModal = ({ order, isOpen, onClose, onOrderUpdated }: OrderDeta
                         </Button>
                         <Button
                             variant="outline"
-                            className="border-white/10 hover:bg-white/5"
-                            onClick={() => window.location.href = emailLink}
+                            size="sm"
+                            className="h-8 gap-1.5 text-black hover:bg-gray-100"
+                            onClick={() => window.location.href = `mailto:${order.customer_email}`}
                             disabled={!order.customer_email}
                         >
                             <Mail className="w-4 h-4 mr-2" />
