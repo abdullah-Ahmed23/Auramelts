@@ -13,6 +13,7 @@ import FAQ from "./pages/FAQ";
 import Blog from "./pages/Blog";
 import Contact from "./pages/Contact";
 import NotFound from "./pages/NotFound";
+import OrderConfirmation from "./pages/OrderConfirmation";
 import AdminLayout from "./components/admin/AdminLayout";
 import Dashboard from "./pages/admin/Dashboard";
 import ProductsManager from "./pages/admin/ProductsManager";
@@ -42,6 +43,7 @@ const AnimatedRoutes = () => {
         <Route path="/faq" element={<FAQ />} />
         <Route path="/blog" element={<Blog />} />
         <Route path="/contact" element={<Contact />} />
+        <Route path="/order-confirmation" element={<OrderConfirmation />} />
 
         {/* Admin Auth */}
         <Route path="/admin/login" element={<AdminLogin />} />

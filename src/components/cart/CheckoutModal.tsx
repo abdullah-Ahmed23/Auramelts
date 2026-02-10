@@ -1,6 +1,7 @@
 import { useState, useRef } from 'react';
 import { useCart } from '@/contexts/CartContext';
 import { supabase } from '@/lib/supabase';
+import { useNavigate } from 'react-router-dom';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -30,6 +31,7 @@ interface CheckoutModalProps {
 
 const CheckoutModal = ({ isOpen, onClose }: CheckoutModalProps) => {
     const { items, totalPrice, clearCart } = useCart();
+    const navigate = useNavigate();
     const [loading, setLoading] = useState(false);
     const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
     const turnstileRef = useRef<TurnstileInstance>(null);
@@ -108,11 +110,23 @@ const CheckoutModal = ({ isOpen, onClose }: CheckoutModalProps) => {
             // Note: Activity logging is now handled by Database Triggers (secure_activity_logs.sql)
             // await logActivity('New Order', `Order #${orderId} placed`, 'create'); 
 
-            toast.success('Order placed successfully! We will contact you shortly.');
+            // Success
+            // Note: Activity logging is now handled by Database Triggers (secure_activity_logs.sql)
+            // await logActivity('New Order', `Order #${orderId} placed`, 'create'); 
+
+            toast.success('Order placed successfully!');
             clearCart();
             setTurnstileToken(null);
             turnstileRef.current?.reset();
             onClose();
+
+            // Navigate to Order Confirmation / Invoice
+            navigate('/order-confirmation', {
+                state: {
+                    order: data.order || { ...formData, id: orderId, total_amount: totalPrice, created_at: new Date().toISOString(), is_paid: false }, // Fallback if data.order is missing structure
+                    items: items
+                }
+            });
 
         } catch (error: any) {
             console.error('Checkout error:', error);

@@ -42,7 +42,6 @@ const Footer = () => {
             <h4 className="font-heading text-sm font-semibold uppercase tracking-wider text-foreground">Company</h4>
             <div className="flex flex-col gap-2">
               <Link to="/about" className="text-sm text-muted-foreground transition-colors hover:text-primary">About Us</Link>
-              <Link to="/blog" className="text-sm text-muted-foreground transition-colors hover:text-primary">Blog</Link>
               <Link to="/faq" className="text-sm text-muted-foreground transition-colors hover:text-primary">FAQ</Link>
               <Link to="/contact" className="text-sm text-muted-foreground transition-colors hover:text-primary">Contact</Link>
             </div>
