@@ -1,10 +1,10 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-// import { categories } from '@/data/products';
 import { ArrowRight } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/lib/supabase';
+import { ImageOptimizer } from '@/components/ImageOptimizer';
 
 const CategoryCards = () => {
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
@@ -74,10 +74,14 @@ const CategoryCards = () => {
                     {/* Image Background */}
                     {cat.image && (
                       <div className="absolute inset-0 z-0">
-                        <img
+                        <ImageOptimizer
                           src={cat.image}
                           alt={cat.name}
+                          width={400}
+                          height={300}
                           className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                          priority={i < 3}
+                          sizes="(max-width: 768px) 50vw, 33vw"
                         />
 
                       </div>

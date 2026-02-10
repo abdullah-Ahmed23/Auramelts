@@ -109,7 +109,7 @@ const Contact = () => {
                     <div>
                       <p className="text-sm text-[#7B4B94]/60 font-medium mb-1">Call Us</p>
                       <p className="text-[#7B4B94] font-bold text-lg">+20 10 18405310</p>
-                      <p className="text-xs text-[#7B4B94]/50 mt-1">Sun - Thu: 9AM - 6PM</p>
+
                     </div>
                   </motion.a>
                 </div>

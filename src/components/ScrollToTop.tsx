@@ -4,19 +4,18 @@ import { useLocation } from 'react-router-dom';
 /**
  * ScrollToTop component
  * Automatically scrolls to the top of the page when navigating to a new route
- * Delays scroll to allow page transition fade-out to complete smoothly
+ * Uses instant scrolling for immediate feedback
  */
 const ScrollToTop = () => {
     const { pathname } = useLocation();
 
     useEffect(() => {
-        // Delay scroll to top to allow fade-out animation to complete
-        // This prevents the jarring "jump to top then fade" effect
-        const timer = setTimeout(() => {
-            window.scrollTo(0, 0);
-        }, 150); // Half of the 300ms transition duration
-
-        return () => clearTimeout(timer);
+        // Scroll to top immediately on route change
+        window.scrollTo({
+            top: 0,
+            left: 0,
+            behavior: 'instant' // Instant scroll for immediate feedback
+        });
     }, [pathname]);
 
     return null;

@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useMemo, useCallback } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence, useScroll, useMotionValueEvent } from 'framer-motion';
 import { useCart } from '@/contexts/CartContext';
@@ -90,9 +90,8 @@ const Navbar = () => {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  // Search functionality (Supabase)
-  const handleSearch = async (query: string) => {
-    setSearchQuery(query);
+  // Debounced search for better performance
+  const performSearch = useCallback(async (query: string) => {
     if (query.trim().length > 1) {
       setIsSearching(true);
       try {
@@ -110,6 +109,20 @@ const Navbar = () => {
     } else {
       setSearchResults([]);
     }
+  }, []);
+
+  // Debounce search with 300ms delay
+  const debouncedSearch = useMemo(() => {
+    let timeoutId: NodeJS.Timeout;
+    return (query: string) => {
+      clearTimeout(timeoutId);
+      timeoutId = setTimeout(() => performSearch(query), 300);
+    };
+  }, [performSearch]);
+
+  const handleSearch = (query: string) => {
+    setSearchQuery(query);
+    debouncedSearch(query);
   };
 
   const handleSearchSubmit = (e: React.FormEvent) => {
@@ -147,6 +160,7 @@ const Navbar = () => {
               marginBottom: isExpanded ? '1rem' : 0
             }}
             transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+            style={{ willChange: isExpanded ? 'height, opacity' : 'auto' }}
             className="hidden lg:block overflow-visible"
           >
             <div className="flex flex-col gap-4 py-4 lg:flex-row lg:items-center lg:justify-between lg:gap-8">

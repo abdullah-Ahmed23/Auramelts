@@ -50,9 +50,9 @@ const FeaturedProducts = () => {
 
   return (
     <section className="py-24 md:py-32 bg-[#F5F0E6] relative overflow-hidden">
-      {/* Ambient Glow */}
-      <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-[#5CC5B5]/10 rounded-full blur-[120px] pointer-events-none" />
-      <div className="absolute bottom-0 left-0 w-[300px] h-[300px] bg-[#E84A8A]/10 rounded-full blur-[100px] pointer-events-none" />
+      {/* Ambient Glow - Reduced blur for mobile */}
+      <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-[#5CC5B5]/10 rounded-full blur-[60px] md:blur-[120px] pointer-events-none" />
+      <div className="absolute bottom-0 left-0 w-[300px] h-[300px] bg-[#E84A8A]/10 rounded-full blur-[50px] md:blur-[100px] pointer-events-none" />
 
       <div className="container relative mx-auto px-4 max-w-7xl z-10">
         <div className="mb-16 text-center">

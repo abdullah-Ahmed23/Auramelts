@@ -3,36 +3,39 @@ import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowRight, Sparkles, Star, Heart } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { useReducedMotion } from '@/hooks/useReducedMotion';
 
 const HeroSection = () => {
+  const prefersReducedMotion = useReducedMotion();
+
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-br from-[#FDF8F4] via-[#FFF9F0] to-[#F5F0E6] pt-20">
 
-      {/* Optimized Background Orbs - Reduced blur */}
+      {/* Optimized Background Orbs - Reduced blur for mobile performance */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <motion.div
-          animate={{
+          animate={prefersReducedMotion ? {} : {
             scale: [1, 1.2, 1],
             opacity: [0.3, 0.5, 0.3],
           }}
           transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
-          className="absolute top-1/4 left-1/4 w-[600px] h-[600px] rounded-full bg-gradient-to-br from-[#E84A8A]/30 to-transparent blur-[80px]"
+          className="absolute top-1/4 left-1/4 w-[600px] h-[600px] rounded-full bg-gradient-to-br from-[#E84A8A]/30 to-transparent blur-[40px] md:blur-[80px]"
         />
         <motion.div
-          animate={{
+          animate={prefersReducedMotion ? {} : {
             scale: [1.2, 1, 1.2],
             opacity: [0.2, 0.4, 0.2],
           }}
           transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
-          className="absolute bottom-1/4 right-1/4 w-[700px] h-[700px] rounded-full bg-gradient-to-tl from-[#5CC5B5]/30 to-transparent blur-[80px]"
+          className="absolute bottom-1/4 right-1/4 w-[700px] h-[700px] rounded-full bg-gradient-to-tl from-[#5CC5B5]/30 to-transparent blur-[40px] md:blur-[80px]"
         />
         <motion.div
-          animate={{
+          animate={prefersReducedMotion ? {} : {
             scale: [0.9, 1.1, 0.9],
             opacity: [0.15, 0.25, 0.15],
           }}
           transition={{ duration: 12, repeat: Infinity, ease: "easeInOut" }}
-          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] rounded-full bg-gradient-to-r from-[#7B4B94]/20 to-transparent blur-[60px]"
+          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] rounded-full bg-gradient-to-r from-[#7B4B94]/20 to-transparent blur-[30px] md:blur-[60px]"
         />
       </div>
 
@@ -167,7 +170,7 @@ const HeroSection = () => {
             className="relative"
           >
             <motion.div
-              animate={{
+              animate={prefersReducedMotion ? {} : {
                 y: [0, -20, 0],
               }}
               transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
@@ -180,7 +183,7 @@ const HeroSection = () => {
 
                   {/* Rotating Border */}
                   <motion.div
-                    animate={{ rotate: 360 }}
+                    animate={prefersReducedMotion ? {} : { rotate: 360 }}
                     transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
                     className="absolute inset-6 rounded-full border-2 border-dashed border-[#E84A8A]/30"
                   />
@@ -188,7 +191,7 @@ const HeroSection = () => {
                   {/* Center Content */}
                   <div className="text-center z-10">
                     <motion.div
-                      animate={{
+                      animate={prefersReducedMotion ? {} : {
                         rotate: [0, 5, -5, 0],
                       }}
                       transition={{ duration: 4, repeat: Infinity }}
@@ -202,21 +205,21 @@ const HeroSection = () => {
 
                   {/* Floating Icons */}
                   <motion.div
-                    animate={{ y: [0, -15, 0], rotate: [0, 10, 0] }}
+                    animate={prefersReducedMotion ? {} : { y: [0, -15, 0], rotate: [0, 10, 0] }}
                     transition={{ duration: 3, repeat: Infinity }}
                     className="absolute top-10 right-10 text-4xl"
                   >
                     ✨
                   </motion.div>
                   <motion.div
-                    animate={{ y: [0, 12, 0], rotate: [0, -10, 0] }}
+                    animate={prefersReducedMotion ? {} : { y: [0, 12, 0], rotate: [0, -10, 0] }}
                     transition={{ duration: 4, repeat: Infinity }}
                     className="absolute bottom-16 left-10 text-3xl"
                   >
                     🌸
                   </motion.div>
                   <motion.div
-                    animate={{ scale: [1, 1.2, 1] }}
+                    animate={prefersReducedMotion ? {} : { scale: [1, 1.2, 1] }}
                     transition={{ duration: 2.5, repeat: Infinity }}
                     className="absolute top-1/2 right-8 text-3xl"
                   >

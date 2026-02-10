@@ -1,25 +1,71 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <!-- TODO: Set the document title to the name of your application -->
-    <title>Aura Melts</title>
-    <meta name="description" content="Aura Melts - Personalized AI Wellness and Melt-in-your-mouth Experiences" />
-    <meta name="author" content="Aura Melts" />
 
-    <meta property="og:title" content="Aura Melts" />
-    <meta property="og:description" content="Aura Melts - Personalized AI Wellness and Melt-in-your-mouth Experiences" />
-    <meta property="og:type" content="website" />
-    <meta property="og:image" content="/og-image.png" />
+<head>
+  <meta charset="UTF-8" />
 
-    <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:site" content="@AuraMelts" />
-    <meta name="twitter:image" content="/og-image.png" />
-  </head>
+  <!-- Optimized Viewport for iOS - viewport-fit=cover for safe-area support -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover" />
 
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
-  </body>
+  <!-- iOS Web App Configuration -->
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Aura Melts" />
+
+  <!-- Theme Colors for Safari/Chrome -->
+  <meta name="theme-color" content="#FFF9F0" media="(prefers-color-scheme: light)" />
+  <meta name="theme-color" content="#7B4B94" media="(prefers-color-scheme: dark)" />
+
+  <!-- Prevent automatic phone number detection on iOS -->
+  <meta name="format-detection" content="telephone=no" />
+
+  <title>Aura Melts - Premium Handcrafted Soy Candles & Wax Melts</title>
+  <meta name="description"
+    content="Experience the magic of hand-poured soy candles and wax melts, infused with premium botanicals to transform your space into a sanctuary of warmth and peace." />
+  <meta name="author" content="Aura Melts" />
+  <meta name="keywords"
+    content="soy candles, wax melts, handcrafted candles, premium candles, aromatherapy, home fragrance" />
+
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="Aura Melts - Premium Handcrafted Soy Candles" />
+  <meta property="og:description" content="Hand-poured soy candles and wax melts infused with premium botanicals" />
+  <meta property="og:image" content="/og-image.png" />
+  <meta property="og:url" content="https://auramelts.com" />
+
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:site" content="@AuraMelts" />
+  <meta name="twitter:title" content="Aura Melts - Premium Handcrafted Soy Candles" />
+  <meta name="twitter:description" content="Hand-poured soy candles and wax melts infused with premium botanicals" />
+  <meta name="twitter:image" content="/og-image.png" />
+
+  <!-- Preconnect to Google Fonts for faster loading -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+
+  <!-- Preload critical fonts with font-display: swap -->
+  <link rel="preload" as="style"
+    href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Nunito:wght@300;400;500;600;700&display=swap" />
+  <link rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Nunito:wght@300;400;500;600;700&display=swap"
+    media="print" onload="this.media='all'" />
+
+  <!-- Fallback for browsers without JS -->
+  <noscript>
+    <link rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Nunito:wght@300;400;500;600;700&display=swap" />
+  </noscript>
+
+  <!-- Apple Touch Icons -->
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+</head>
+
+<body>
+  <div id="root"></div>
+  <script type="module" src="/src/main.tsx"></script>
+</body>
+
 </html>

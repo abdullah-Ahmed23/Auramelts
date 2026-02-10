@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import { Star, ShoppingBag } from 'lucide-react';
 import { Product } from '@/data/products';
 import { Button } from '@/components/ui/button';
+import { ImageOptimizer } from '@/components/ImageOptimizer';
 
 interface ProductCardProps {
     product: Product;
@@ -23,10 +24,14 @@ const ProductCard = React.memo(({ product, index = 0, onQuickAdd }: ProductCardP
             <div className="relative overflow-hidden rounded-2xl border border-[#E6C9C9]/30 bg-white transition-all duration-500 hover:shadow-2xl hover:shadow-[#FF85A1]/10 hover:-translate-y-2">
                 <Link to={`/products/${product.id}`} className="block">
                     <div className="relative overflow-hidden aspect-[4/5]">
-                        <img
+                        <ImageOptimizer
                             src={product.image}
                             alt={product.name}
+                            width={400}
+                            height={500}
                             className={`h-full w-full object-cover transition-transform duration-700 group-hover:scale-110 ${product.stock === 0 ? 'grayscale opacity-60' : ''}`}
+                            priority={index < 4} // Prioritize first 4 images
+                            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
                         />
                         <div className="absolute inset-0 bg-black/5 group-hover:bg-black/0 transition-colors duration-300" />
 
