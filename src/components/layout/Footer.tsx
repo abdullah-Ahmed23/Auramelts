@@ -1,74 +1,153 @@
 import { Link } from 'react-router-dom';
-import { Heart, Instagram, Facebook, Mail } from 'lucide-react';
+import { Heart, Instagram, Facebook, Mail, ArrowRight } from 'lucide-react';
 
 const Footer = () => {
   return (
-    <footer className="border-t border-border bg-card">
-      <div className="container mx-auto px-4 py-12">
-        <div className="grid gap-8 md:grid-cols-4">
-          {/* Brand */}
-          <div className="space-y-4">
-            <h3 className="font-heading text-xl font-bold text-foreground">Aura Melts</h3>
-            <p className="font-body text-sm text-muted-foreground">
-              Handcrafted candles & wax melts made with love. Bringing warmth and fragrance to every home.
+    <footer className="relative bg-[#1a1025] text-white pt-20 pb-10 overflow-hidden">
+      {/* Background Decorative Elements */}
+      <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-primary/50 to-transparent opacity-50" />
+      <div className="absolute -top-40 -right-40 w-96 h-96 bg-primary/10 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute -bottom-40 -left-40 w-96 h-96 bg-purple/10 rounded-full blur-3xl pointer-events-none" />
+
+      <div className="container mx-auto px-4 relative z-10">
+        <div className="grid gap-12 lg:grid-cols-12 mb-16">
+          {/* Brand Column */}
+          <div data-aos="fade-up" className="lg:col-span-4 space-y-6">
+            <Link to="/" className="inline-block">
+              <h3 className="font-heading text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary via-rose-300 to-primary/80">
+                Aura Melts
+              </h3>
+            </Link>
+            <p className="font-body text-gray-300 leading-relaxed max-w-sm">
+              Handcrafted candles & wax melts made with love. Bringing warmth, fragrance, and a touch of luxury to every home.
             </p>
-            <a href="tel:+201018405310" className="font-body text-sm font-bold text-[#7B4B94] hover:text-[#E84A8A] transition-colors inline-block">+20 10 18405310</a>
-            <div className="flex items-center gap-3">
-              <a href="#" className="rounded-full bg-muted p-2 text-muted-foreground transition-colors hover:bg-primary hover:text-primary-foreground" aria-label="Instagram">
-                <Instagram className="h-4 w-4" />
+            <div className="space-y-2">
+              <a
+                href="tel:+201018405310"
+                className="font-body font-bold text-lg text-primary hover:text-primary/80 transition-colors flex items-center gap-2"
+              >
+                +20 10 18405310
               </a>
-              <a href="#" className="rounded-full bg-muted p-2 text-muted-foreground transition-colors hover:bg-primary hover:text-primary-foreground" aria-label="Facebook">
-                <Facebook className="h-4 w-4" />
-              </a>
-              <a href="#" className="rounded-full bg-muted p-2 text-muted-foreground transition-colors hover:bg-primary hover:text-primary-foreground" aria-label="Email">
-                <Mail className="h-4 w-4" />
-              </a>
+              <p className="text-sm text-gray-400">Cairo, Egypt</p>
+            </div>
+            <div className="flex items-center gap-4 pt-2">
+              {[
+                { icon: Instagram, label: 'Instagram', href: '#' },
+                { icon: Facebook, label: 'Facebook', href: '#' },
+                { icon: Mail, label: 'Email', href: '#' }
+              ].map((social, index) => (
+                <a
+                  key={index}
+                  href={social.href}
+                  className="rounded-full bg-white/5 p-3 text-gray-300 transition-all duration-300 hover:text-primary hover:bg-[#FF85A1]/20 hover:scale-110 active:scale-95 border border-white/10"
+                  aria-label={social.label}
+                >
+                  <social.icon className="h-5 w-5" />
+                </a>
+              ))}
             </div>
           </div>
 
           {/* Quick Links */}
-          <div className="space-y-4">
-            <h4 className="font-heading text-sm font-semibold uppercase tracking-wider text-foreground">Products</h4>
-            <div className="flex flex-col gap-2">
-              <Link to="/products?category=candles" className="text-sm text-muted-foreground transition-colors hover:text-primary">Candles</Link>
-              <Link to="/products?category=wax-melts" className="text-sm text-muted-foreground transition-colors hover:text-primary">Wax Melts</Link>
-              <Link to="/products?category=diffusers" className="text-sm text-muted-foreground transition-colors hover:text-primary">Diffusers</Link>
-              <Link to="/products?category=accessories" className="text-sm text-muted-foreground transition-colors hover:text-primary">Accessories</Link>
-            </div>
+          <div data-aos="fade-up" data-aos-delay="100" className="lg:col-span-2 lg:col-start-6 space-y-6">
+            <h4 className="font-heading text-lg font-semibold text-primary tracking-wide">Shop</h4>
+            <ul className="space-y-3">
+              {[
+                { name: 'Candles', path: '/products?category=candles' },
+                { name: 'Wax Melts', path: '/products?category=wax-melts' },
+                { name: 'Diffusers', path: '/products?category=diffusers' },
+                { name: 'Accessories', path: '/products?category=accessories' }
+              ].map((link) => (
+                <li key={link.name}>
+                  <Link
+                    to={link.path}
+                    className="text-gray-400 hover:text-white hover:translate-x-1 transition-all duration-300 flex items-center gap-1 group"
+                  >
+                    <span className="w-0 h-0.5 bg-primary transition-all duration-300 group-hover:w-2" />
+                    {link.name}
+                  </Link>
+                </li>
+              ))}
+            </ul>
           </div>
 
           {/* Company */}
-          <div className="space-y-4">
-            <h4 className="font-heading text-sm font-semibold uppercase tracking-wider text-foreground">Company</h4>
-            <div className="flex flex-col gap-2">
-              <Link to="/about" className="text-sm text-muted-foreground transition-colors hover:text-primary">About Us</Link>
-              <Link to="/faq" className="text-sm text-muted-foreground transition-colors hover:text-primary">FAQ</Link>
-              <Link to="/contact" className="text-sm text-muted-foreground transition-colors hover:text-primary">Contact</Link>
-            </div>
+          <div data-aos="fade-up" data-aos-delay="200" className="lg:col-span-2 space-y-6">
+            <h4 className="font-heading text-lg font-semibold text-primary tracking-wide">Company</h4>
+            <ul className="space-y-3">
+              {[
+                { name: 'About Us', path: '/about' },
+                { name: 'FAQ', path: '/faq' },
+                { name: 'Contact', path: '/contact' },
+                { name: 'Privacy Policy', path: '/privacy' }
+              ].map((link) => (
+                <li key={link.name}>
+                  <Link
+                    to={link.path}
+                    className="text-gray-400 hover:text-white hover:translate-x-1 transition-all duration-300 flex items-center gap-1 group"
+                  >
+                    <span className="w-0 h-0.5 bg-primary transition-all duration-300 group-hover:w-2" />
+                    {link.name}
+                  </Link>
+                </li>
+              ))}
+            </ul>
           </div>
 
           {/* Newsletter */}
-          <div className="space-y-4">
-            <h4 className="font-heading text-sm font-semibold uppercase tracking-wider text-foreground">Stay Connected</h4>
-            <p className="text-sm text-muted-foreground">Get 10% off your first order when you sign up!</p>
-            <div className="flex gap-2">
-              <input
-                type="email"
-                placeholder="Your email"
-                className="flex-1 rounded-lg border border-input bg-background px-3 py-2 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary"
-              />
-              <button className="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90">
-                Join
-              </button>
+          <div data-aos="fade-up" data-aos-delay="300" className="lg:col-span-4 space-y-6">
+            <div className="bg-white/5 backdrop-blur-md rounded-2xl p-6 border border-white/10 shadow-xl">
+              <h4 className="font-heading text-xl font-semibold text-white mb-2">Join Our Inner Circle</h4>
+              <p className="text-gray-400 text-sm mb-4">
+                Subscribe to receive updates, access to exclusive deals, and 10% off your first order.
+              </p>
+              <form className="space-y-3" onSubmit={(e) => e.preventDefault()}>
+                <div className="relative">
+                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500" />
+                  <input
+                    type="email"
+                    placeholder="Your email address"
+                    className="w-full bg-white/10 border border-white/10 rounded-xl py-3 pl-10 pr-4 text-sm text-white placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/50 transition-all"
+                  />
+                </div>
+                <button
+                  type="submit"
+                  className="w-full bg-primary hover:bg-primary/90 text-white font-medium py-3 rounded-xl transition-all duration-300 flex items-center justify-center gap-2 group"
+                >
+                  <span>Subscribe Now</span>
+                  <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
+                </button>
+              </form>
             </div>
           </div>
         </div>
 
-        <div className="mt-10 flex flex-col items-center gap-2 border-t border-border pt-6 text-center">
-          <p className="flex items-center gap-1 text-sm text-muted-foreground">
-            Made with <Heart className="h-3 w-3 fill-primary text-primary" /> by <a href="https://www.facebook.com/profile.php?id=100035910953594" target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors">Abdullah Ahmed</a>
-          </p>
-          <p className="text-xs text-muted-foreground">© {new Date().getFullYear()} Aura Melts. All rights reserved.</p>
+        {/* Bottom Bar */}
+        <div
+          data-aos="fade-up"
+          data-aos-delay="400"
+          className="border-t border-white/10 pt-8"
+        >
+          <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+            <p className="text-xs text-gray-500 text-center md:text-left">
+              © {new Date().getFullYear()} Aura Melts. All rights reserved.
+            </p>
+
+            <div className="flex flex-col md:flex-row items-center gap-4">
+              <p className="flex items-center gap-1.5 text-sm text-gray-400">
+                Made with <Heart className="h-3.5 w-3.5 fill-primary text-primary animate-pulse" /> by
+                <a
+                  href="https://www.facebook.com/profile.php?id=100035910953594"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="font-medium text-white hover:text-primary transition-colors relative group min-h-0 inline-flex items-center"
+                >
+                  Abdullah Ahmed
+                  <span className="absolute -bottom-0.5 left-0 w-0 h-0.5 bg-primary transition-all duration-300 group-hover:w-full" />
+                </a>
+              </p>
+            </div>
+          </div>
         </div>
       </div>
     </footer>

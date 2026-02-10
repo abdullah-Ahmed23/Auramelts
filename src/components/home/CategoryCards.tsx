@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { motion } from 'framer-motion';
 import { ArrowRight } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/lib/supabase';
@@ -28,11 +27,8 @@ const CategoryCards = () => {
       <div className="container relative mx-auto px-4 md:px-8 max-w-7xl z-10">
         {/* Header */}
         <div className="mb-16 md:mb-20 text-center">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
+          <div
+            data-aos="fade-up"
           >
             <span className="inline-flex items-center gap-2 px-5 py-2 mb-6 text-xs font-semibold tracking-[0.2em] uppercase text-[#7B4B94] bg-[#7B4B94]/10 rounded-full border border-[#7B4B94]/20">
               <span className="w-1.5 h-1.5 rounded-full bg-[#E84A8A]" />
@@ -44,7 +40,7 @@ const CategoryCards = () => {
             <p className="text-lg text-[#7B4B94]/70 max-w-xl mx-auto leading-relaxed">
               Each collection is thoughtfully curated to match every moment of your day.
             </p>
-          </motion.div>
+          </div>
         </div>
 
         {/* Grid */}
@@ -53,12 +49,10 @@ const CategoryCards = () => {
             const isHovered = hoveredIndex === i;
 
             return (
-              <motion.div
+              <div
                 key={cat.id}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.5, delay: i * 0.1 }}
+                data-aos="fade-up"
+                data-aos-delay={i * 100}
               >
                 <Link
                   to={`/products?category=${cat.slug}`}
@@ -66,10 +60,8 @@ const CategoryCards = () => {
                   onMouseLeave={() => setHoveredIndex(null)}
                   className="group relative block h-full"
                 >
-                  <motion.div
-                    whileHover={{ y: -6 }}
-                    transition={{ type: 'spring', stiffness: 300, damping: 20 }}
-                    className="relative h-full min-h-[200px] md:min-h-[260px] p-6 md:p-8 rounded-3xl bg-white overflow-hidden border border-[#E84A8A]/20 shadow-lg shadow-[#E84A8A]/10 hover:shadow-xl hover:shadow-[#E84A8A]/15 transition-all duration-300"
+                  <div
+                    className="relative h-full min-h-[200px] md:min-h-[260px] p-6 md:p-8 rounded-3xl bg-white overflow-hidden border border-[#E84A8A]/20 shadow-lg shadow-[#E84A8A]/10 hover:shadow-xl hover:shadow-[#E84A8A]/15 transition-all duration-300 hover:-translate-y-2"
                   >
                     {/* Image Background */}
                     {cat.image && (
@@ -83,7 +75,6 @@ const CategoryCards = () => {
                           priority={i < 3}
                           sizes="(max-width: 768px) 50vw, 33vw"
                         />
-
                       </div>
                     )}
 
@@ -93,13 +84,8 @@ const CategoryCards = () => {
 
                     {/* Accent Circle - Only if no image */}
                     {!cat.image && (
-                      <motion.div
-                        animate={{
-                          scale: isHovered ? 1.2 : 1,
-                          opacity: isHovered ? 0.25 : 0.1,
-                        }}
-                        transition={{ duration: 0.4 }}
-                        className="absolute -top-10 -right-10 w-32 h-32 rounded-full bg-[#5CC5B5]"
+                      <div
+                        className={`absolute -top-10 -right-10 w-32 h-32 rounded-full bg-[#5CC5B5] transition-all duration-400 ${isHovered ? 'scale-125 opacity-25' : 'scale-100 opacity-10'}`}
                       />
                     )}
 
@@ -108,12 +94,11 @@ const CategoryCards = () => {
                       {/* Icon Fallback - Only show if NO image */}
                       {!cat.image && (
                         <div className="mb-auto pt-6 flex justify-center">
-                          <motion.div
-                            whileHover={{ scale: 1.05, rotate: 3 }}
-                            className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-white shadow-sm border border-[#E84A8A]/10 text-4xl"
+                          <div
+                            className={`inline-flex items-center justify-center w-20 h-20 rounded-full bg-white shadow-sm border border-[#E84A8A]/10 text-4xl transition-transform duration-300 ${isHovered ? 'scale-110 rotate-3' : ''}`}
                           >
                             {cat.icon || '✨'}
-                          </motion.div>
+                          </div>
                         </div>
                       )}
 
@@ -134,19 +119,17 @@ const CategoryCards = () => {
                         </div>
                       </div>
                     </div>
-                  </motion.div>
+                  </div>
                 </Link>
-              </motion.div>
+              </div>
             );
           })}
         </div>
 
         {/* View All Button */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ delay: 0.4 }}
+        <div
+          data-aos="fade-up"
+          data-aos-delay="400"
           className="mt-12 md:mt-16 text-center"
         >
           <Link
@@ -156,7 +139,7 @@ const CategoryCards = () => {
             View All Products
             <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
           </Link>
-        </motion.div>
+        </div>
       </div>
     </section>
   );

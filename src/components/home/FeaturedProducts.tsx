@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { motion } from 'framer-motion';
 import { Product } from '@/data/products';
 import { Button } from '@/components/ui/button';
 import ProductCard from '../products/ProductCard';
@@ -56,34 +55,28 @@ const FeaturedProducts = () => {
 
       <div className="container relative mx-auto px-4 max-w-7xl z-10">
         <div className="mb-16 text-center">
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
+          <div
+            data-aos="fade-up"
           >
             <span className="inline-flex items-center gap-2 px-5 py-2 mb-6 text-xs font-semibold tracking-[0.2em] uppercase text-[#7B4B94] bg-[#7B4B94]/10 rounded-full border border-[#7B4B94]/20">
               <span className="w-1.5 h-1.5 rounded-full bg-[#E84A8A]" />
               Handpicked
             </span>
-          </motion.div>
-          <motion.h2
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.1 }}
+          </div>
+          <h2
+            data-aos="fade-up"
+            data-aos-delay="100"
             className="mb-4 text-4xl font-bold text-[#7B4B94] md:text-5xl"
           >
             Featured <span className="italic text-[#E84A8A]">Collection</span>
-          </motion.h2>
-          <motion.p
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.2 }}
+          </h2>
+          <p
+            data-aos="fade-up"
+            data-aos-delay="200"
             className="text-[#7B4B94]/70 max-w-lg mx-auto text-lg"
           >
             Our most loved scents, hand-poured with intention to transform your daily rituals.
-          </motion.p>
+          </p>
         </div>
 
         {isLoading ? (
@@ -93,21 +86,20 @@ const FeaturedProducts = () => {
         ) : (
           <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
             {featured.slice(0, 4).map((product, index) => (
-              <ProductCard
-                key={product.id}
-                product={product}
-                index={index}
-                onQuickAdd={handleQuickAdd}
-              />
+              <div key={product.id} data-aos="fade-up" data-aos-delay={index * 100}>
+                <ProductCard
+                  product={product}
+                  index={index}
+                  onQuickAdd={handleQuickAdd}
+                />
+              </div>
             ))}
           </div>
         )}
 
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ delay: 0.3 }}
+        <div
+          data-aos="fade-up"
+          data-aos-delay="300"
           className="mt-16 text-center"
         >
           <Button asChild size="lg" className="h-14 rounded-full px-10 bg-[#7B4B94] hover:bg-[#6A3F82] text-white font-semibold shadow-lg shadow-[#7B4B94]/20 transition-all hover:scale-105 hover:-translate-y-0.5">
@@ -116,7 +108,7 @@ const FeaturedProducts = () => {
               <ArrowRight className="w-4 h-4" />
             </Link>
           </Button>
-        </motion.div>
+        </div>
       </div>
 
       <QuickAddModal

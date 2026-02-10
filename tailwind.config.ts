@@ -148,6 +148,7 @@ export default {
         "slide-in-right": "slide-in-right 0.3s ease-out",
         "slide-out-right": "slide-out-right 0.3s ease-out",
         "float": "float 3s ease-in-out infinite",
+        "spin-slow": "spin 8s linear infinite",
       },
     },
   },
