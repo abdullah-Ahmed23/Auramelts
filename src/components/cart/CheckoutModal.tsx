@@ -144,6 +144,10 @@ const CheckoutModal = ({ isOpen, onClose }: CheckoutModalProps) => {
         } catch (error: any) {
             console.error('Checkout error:', error);
             toast.error(error.message || 'Failed to place order. Please try again.');
+
+            // Reset Turnstile on error so user can try again
+            setTurnstileToken(null);
+            turnstileRef.current?.reset();
         } finally {
             setLoading(false);
         }

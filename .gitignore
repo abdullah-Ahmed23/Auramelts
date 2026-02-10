@@ -35,3 +35,13 @@ supabase/.temp
 # OS
 Thumbs.db
 
+# Deployment Safety (Exclude SQL and Dev Scripts)
+*.sql
+check_*.ts
+debug_*.ts
+test_*.ts
+create_bucket.ts
+verify_setup.ts
+inspect_order.ts
+add_page_transitions.js
+

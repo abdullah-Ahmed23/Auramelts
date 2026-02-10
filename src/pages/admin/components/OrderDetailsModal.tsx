@@ -168,8 +168,36 @@ const OrderDetailsModal = ({ order, isOpen, onClose, onOrderUpdated }: OrderDeta
         }
     };
 
+    // Format phone for WhatsApp (Egypt: 01xxxx -> 201xxxx)
+    const formatPhoneForWhatsapp = (phone: string) => {
+        let clean = phone.replace(/\D/g, '');
+        // If starts with 0 (e.g. 010...), prepend 2 to make it 2010...
+        if (clean.startsWith('0')) return '2' + clean;
+        return clean;
+    };
+
+    const getWhatsappMessage = () => {
+        let msg = `Hello ${order.customer_name}, regarding your order #${order.id.slice(0, 8)} with Aura Melts.`;
+        msg += `\n\nWe have received your request for:`;
+
+        order.order_items?.forEach((item: any) => {
+            const variant = item.variant_name ? ` (${item.variant_name})` : '';
+            msg += `\n- ${item.quantity}x ${item.products?.name}${variant}`;
+        });
+
+        msg += `\n\nTotal: EGP ${order.total_amount}`;
+
+        if (order.payment_method === 'instapay' && !order.is_paid) {
+            msg += `\n\nPlease send the payment so we can proceed with the order.`;
+        }
+
+        msg += `\n\nInvoice: ${window.location.origin}/order-confirmation?id=${order.id}`;
+        msg += `\n\nWe will process it shortly!`;
+        return encodeURIComponent(msg);
+    };
+
     const whatsappLink = order.customer_phone
-        ? `https://wa.me/${order.customer_phone.replace(/\D/g, '')}?text=Hello ${order.customer_name}, regarding your order #${order.id.slice(0, 8)}...`
+        ? `https://wa.me/${formatPhoneForWhatsapp(order.customer_phone)}?text=${getWhatsappMessage()}`
         : '#';
 
     const emailLink = order.customer_email

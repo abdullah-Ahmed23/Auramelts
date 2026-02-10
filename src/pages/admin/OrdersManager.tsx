@@ -31,7 +31,7 @@ const OrdersManager = () => {
         queryFn: async () => {
             const { data, error } = await supabase
                 .from('orders')
-                .select('*')
+                .select('*, order_items:order_items(*, products:products(name, image))')
                 .order('created_at', { ascending: false });
 
             if (error) throw error;

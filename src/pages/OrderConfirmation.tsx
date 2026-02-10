@@ -1,18 +1,69 @@
-import { useLocation, useNavigate, Link } from 'react-router-dom';
+import { useLocation, useNavigate, Link, useSearchParams } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { CheckCircle, Printer, ArrowLeft, Mail, Phone, MapPin } from 'lucide-react';
-import { useEffect } from 'react';
+import { CheckCircle, Printer, ArrowLeft, Mail, Phone, MapPin, Loader2 } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { supabase } from '@/lib/supabase';
 
 const OrderConfirmation = () => {
     const location = useLocation();
     const navigate = useNavigate();
-    const { order, items } = location.state || {};
+    const [searchParams] = useSearchParams();
+    const orderId = searchParams.get('id');
+
+    const [order, setOrder] = useState<any>(location.state?.order || null);
+    const [items, setItems] = useState<any[]>(location.state?.items || []);
+    const [loading, setLoading] = useState(!location.state?.order);
 
     useEffect(() => {
-        if (!order) {
+        const fetchOrder = async () => {
+            if (!orderId) {
+                if (!location.state?.order) navigate('/', { replace: true });
+                return;
+            }
+
+            try {
+                // Fetch order and items
+                const { data: orderData, error: orderError } = await supabase
+                    .from('orders')
+                    .select('*, order_items:order_items(*, products:products(title:name, price, image))')
+                    .eq('id', orderId)
+                    .single();
+
+                if (orderError || !orderData) throw orderError;
+
+                setOrder(orderData);
+
+                // Transform items to match expected structure
+                // effectively the same structure as select result but ensure compatibility
+                setItems(orderData.order_items.map((item: any) => ({
+                    ...item,
+                    product: item.products, // Map nested product to expected prop
+                    variant: item.variant_name ? { name: item.variant_name, price: item.price } : null // Construct minimal variant obj
+                })));
+
+            } catch (error) {
+                console.error("Failed to load invoice:", error);
+                // toast.error("Invoice not found");
+                navigate('/', { replace: true });
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        if (!order && orderId) {
+            fetchOrder();
+        } else if (!order && !orderId) {
             navigate('/', { replace: true });
         }
-    }, [order, navigate]);
+    }, [orderId, order, navigate, location.state]);
+
+    if (loading) {
+        return (
+            <div className="min-h-screen bg-[#FDF8F4] flex items-center justify-center">
+                <Loader2 className="w-8 h-8 text-[#7B4B94] animate-spin" />
+            </div>
+        );
+    }
 
     if (!order) return null;
 
