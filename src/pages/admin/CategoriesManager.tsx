@@ -88,7 +88,7 @@ const CategoriesManager = () => {
                             animate={{ opacity: 1, scale: 1 }}
                             exit={{ opacity: 0, scale: 0.9 }}
                             transition={{ delay: index * 0.05 }}
-                            className="p-6 rounded-[2rem] bg-white/5 border border-white/10 backdrop-blur-xl group hover:border-purple-500/30 transition-all relative overflow-hidden"
+                            className="p-6 rounded-[2rem] bg-white/5 border border-white/10 backdrop-blur-xl group hover:border-purple-500/30 transition-colors relative overflow-hidden"
                         >
                             <div className="absolute top-0 right-0 w-24 h-24 bg-purple-500/5 blur-3xl rounded-full -mr-12 -mt-12 transition-all group-hover:bg-purple-500/10" />
 

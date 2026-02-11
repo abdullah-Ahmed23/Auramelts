@@ -41,7 +41,7 @@ const CartDrawer = () => {
                 <ShoppingBag className="w-10 h-10 text-[#E84A8A]/40" />
               </motion.div>
               <h3 className="text-xl font-bold text-[#7B4B94]">Your cart is empty</h3>
-              <p className="text-[#7B4B94]/60 max-w-[200px]">Looks like you haven't added any magical scents yet.</p>
+              <p className="text-[#7B4B94]/60 max-w-[200px]">Looks like you haven't added any magical senses yet.</p>
               <Button
                 onClick={() => setIsCartOpen(false)}
                 className="mt-6 h-12 rounded-xl bg-[#7B4B94] text-white hover:bg-[#6A3F82] px-8 shadow-lg shadow-[#7B4B94]/20"

@@ -8,7 +8,7 @@ import FeedbackForm from '@/components/home/FeedbackForm';
 import MiniFAQ from '@/components/home/MiniFAQ';
 import ContactSection from '@/components/home/ContactSection';
 import PageTransition from '@/components/PageTransition';
-// import Newsletter from '@/components/home/Newsletter';
+import Newsletter from '@/components/home/Newsletter';
 
 const Index = () => {
   return (
@@ -21,6 +21,7 @@ const Index = () => {
         <Testimonials />
         <FeedbackForm />
         <MiniFAQ />
+        <Newsletter />
         <ContactSection />
       </Layout>
     </PageTransition>

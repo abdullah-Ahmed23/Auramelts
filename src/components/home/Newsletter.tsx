@@ -1,8 +1,45 @@
+import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Send, Mail, Sparkles } from 'lucide-react';
+import { Send, Mail, Sparkles, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { supabase } from '@/lib/supabase';
+import { toast } from 'sonner';
 
 const Newsletter = () => {
+  const [email, setEmail] = useState('');
+  const [loading, setLoading] = useState(false);
+
+  const handleSubscribe = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!email) return;
+
+    setLoading(true);
+    console.log('Attempting to subscribe:', email);
+    try {
+      const { data, error } = await supabase
+        .from('subscribers')
+        .insert([{ email }]);
+
+      if (error) {
+        console.error('Subscription error:', error);
+        if (error.code === '23505') {
+          toast.info('You are already subscribed!');
+        } else {
+          throw error;
+        }
+      } else {
+        console.log('Subscription successful:', data);
+        toast.success('Welcome! Check your email for your 10% discount.');
+        setEmail('');
+      }
+    } catch (err: any) {
+      console.error('Caught subscription error:', err);
+      toast.error(err.message || 'Failed to subscribe. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <section className="py-24 md:py-32 bg-[#F5F0E6] relative overflow-hidden">
       {/* Background Elements */}
@@ -54,22 +91,31 @@ const Newsletter = () => {
           </motion.h2>
 
           <p className="mb-10 text-[#7B4B94]/70 text-lg max-w-xl mx-auto leading-relaxed">
-            Be the first to know about new scents, exclusive offers, and candle care tips.
+            Be the first to know about new senses, exclusive offers, and candle care tips.
             Join our community and get <span className="text-[#E84A8A] font-semibold">10% off</span> your first order!
           </p>
 
           {/* Form */}
-          <div className="mx-auto flex max-w-md flex-col gap-4 sm:flex-row">
+          <form onSubmit={handleSubscribe} className="mx-auto flex max-w-md flex-col gap-4 sm:flex-row">
             <input
               type="email"
               placeholder="Your email address"
-              className="flex-1 rounded-full border border-[#E84A8A]/20 bg-[#FDF8F4] px-6 py-4 text-sm text-[#7B4B94] placeholder:text-[#7B4B94]/40 focus:outline-none focus:ring-2 focus:ring-[#E84A8A]/30 focus:border-[#E84A8A]/50 transition-all"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              disabled={loading}
+              className="flex-1 rounded-full border border-[#E84A8A]/20 bg-[#FDF8F4] px-6 py-4 text-sm text-[#7B4B94] placeholder:text-[#7B4B94]/40 focus:outline-none focus:ring-2 focus:ring-[#E84A8A]/30 focus:border-[#E84A8A]/50 transition-all disabled:opacity-50"
+              required
             />
-            <Button className="h-14 rounded-full px-8 bg-[#E84A8A] hover:bg-[#D43D7A] font-semibold shadow-lg shadow-[#E84A8A]/30 transition-all hover:scale-105 hover:-translate-y-0.5" size="lg">
-              <Send className="mr-2 h-4 w-4" />
-              Subscribe
+            <Button
+              type="submit"
+              disabled={loading}
+              className="h-14 rounded-full px-8 bg-[#E84A8A] hover:bg-[#D43D7A] font-semibold shadow-lg shadow-[#E84A8A]/30 transition-all hover:scale-105 hover:-translate-y-0.5"
+              size="lg"
+            >
+              {loading ? <Loader2 className="w-5 h-4 animate-spin mr-2" /> : <Send className="mr-2 h-4 w-4" />}
+              {loading ? 'Subscribing...' : 'Subscribe'}
             </Button>
-          </div>
+          </form>
 
           {/* Footer Note */}
           <div className="mt-10 flex items-center justify-center gap-2 text-[#7B4B94]/50">

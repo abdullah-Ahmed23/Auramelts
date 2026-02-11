@@ -17,7 +17,7 @@ export interface Product {
 }
 
 export const categories = [
-  { id: 'candles' as ProductCategory, name: 'Candles', icon: '🕯️', description: 'Hand-poured soy candles with natural fragrances' },
+  { id: 'candles' as ProductCategory, name: 'Candles', icon: '🕯️', description: 'Hand-poured nature wax candles with natural fragrances' },
   { id: 'wax-melts' as ProductCategory, name: 'Wax Melts', icon: '🫠', description: 'Scented wax melts for your burner' },
   { id: 'diffusers' as ProductCategory, name: 'Diffusers', icon: '🌸', description: 'Reed diffusers for lasting fragrance' },
   { id: 'accessories' as ProductCategory, name: 'Accessories', icon: '✨', description: 'Candle care tools and more' },

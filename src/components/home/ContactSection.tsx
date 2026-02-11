@@ -95,7 +95,7 @@ const ContactSection = () => {
                             <motion.a
                                 href="tel:+201018405310"
                                 whileHover={{ x: 5 }}
-                                className="flex items-center gap-4 p-4 rounded-2xl bg-white/80 border border-[#E84A8A]/10 hover:border-[#E84A8A]/30 transition-all group"
+                                className="flex items-center gap-4 p-4 rounded-2xl bg-white/80 border border-[#E84A8A]/10 hover:border-[#E84A8A]/30 transition-colors duration-300 group"
                             >
                                 <div className="w-12 h-12 rounded-xl bg-[#5CC5B5]/10 flex items-center justify-center group-hover:bg-[#5CC5B5]/20 transition-colors">
                                     <Phone className="w-6 h-6 text-[#5CC5B5]" />

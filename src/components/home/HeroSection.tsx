@@ -58,7 +58,7 @@ const HeroSection = () => {
               data-aos-delay="300"
               className="text-lg md:text-xl text-[#7B4B94]/70 leading-relaxed max-w-xl mx-auto lg:mx-0"
             >
-              Experience the magic of hand-poured soy candles and wax melts, infused with premium botanicals to transform your space into a sanctuary of warmth and peace.
+              Experience the magic of hand-poured nature wax candles and wax melts, infused with premium botanicals to transform your space into a sanctuary of warmth and peace.
             </p>
 
             {/* CTA Buttons */}
@@ -155,7 +155,7 @@ const HeroSection = () => {
                       🕯️
                     </div>
                     <p className="text-3xl font-bold text-[#7B4B94] uppercase tracking-wider">Aura Melts</p>
-                    <p className="text-base text-[#E84A8A]/70 mt-2">Premium Soy Candles</p>
+                    <p className="text-base text-[#E84A8A]/70 mt-2">Premium Nature Wax Candles</p>
                   </div>
 
                   {/* Floating Icons */}

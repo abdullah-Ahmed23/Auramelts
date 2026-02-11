@@ -187,7 +187,7 @@ const Navbar = () => {
                       value={searchQuery}
                       onChange={(e) => handleSearch(e.target.value)}
                       onFocus={() => setIsSearchFocused(true)}
-                      placeholder="Search for candles, scents, wax melts..."
+                      placeholder="Search for candles, senses, wax melts..."
                       className="flex-1 bg-transparent px-4 py-3 text-[#7B4B94] placeholder:text-[#7B4B94]/40 focus:outline-none"
                     />
                     <button
@@ -246,7 +246,7 @@ const Navbar = () => {
           <div className="flex h-20 items-center justify-between lg:hidden">
             <Link to="/" className="flex items-center gap-2" onClick={() => setIsMobileOpen(false)}>
               <img src={logo} alt="Aura Melts" className="h-10 w-10 rounded-full shadow-sm" />
-              <span className="font-heading text-lg font-bold tracking-widest text-[#7B4B94]">AURA</span>
+              <span className="font-heading text-lg font-bold tracking-widest text-[#7B4B94]">AURA MELTS</span>
             </Link>
 
             <div className="flex items-center gap-4">

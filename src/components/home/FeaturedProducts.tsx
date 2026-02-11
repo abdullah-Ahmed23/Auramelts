@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { motion } from 'framer-motion';
 import { Product } from '@/data/products';
 import { Button } from '@/components/ui/button';
 import ProductCard from '../products/ProductCard';
@@ -54,29 +55,24 @@ const FeaturedProducts = () => {
       <div className="absolute bottom-0 left-0 w-[300px] h-[300px] bg-[#E84A8A]/10 rounded-full blur-[50px] md:blur-[100px] pointer-events-none" />
 
       <div className="container relative mx-auto px-4 max-w-7xl z-10">
-        <div className="mb-16 text-center">
-          <div
-            data-aos="fade-up"
+        <div className="mb-12 md:mb-16 text-center">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
           >
             <span className="inline-flex items-center gap-2 px-5 py-2 mb-6 text-xs font-semibold tracking-[0.2em] uppercase text-[#7B4B94] bg-[#7B4B94]/10 rounded-full border border-[#7B4B94]/20">
               <span className="w-1.5 h-1.5 rounded-full bg-[#E84A8A]" />
               Handpicked
             </span>
-          </div>
-          <h2
-            data-aos="fade-up"
-            data-aos-delay="100"
-            className="mb-4 text-4xl font-bold text-[#7B4B94] md:text-5xl"
-          >
-            Featured <span className="italic text-[#E84A8A]">Collection</span>
-          </h2>
-          <p
-            data-aos="fade-up"
-            data-aos-delay="200"
-            className="text-[#7B4B94]/70 max-w-lg mx-auto text-lg"
-          >
-            Our most loved scents, hand-poured with intention to transform your daily rituals.
-          </p>
+            <h2 className="mb-4 text-4xl font-bold text-[#7B4B94] md:text-5xl">
+              Featured <span className="italic text-[#E84A8A]">Collection</span>
+            </h2>
+            <p className="text-[#7B4B94]/70 max-w-lg mx-auto text-lg">
+              Our most loved senses, hand-poured with intention to transform your daily rituals.
+            </p>
+          </motion.div>
         </div>
 
         {isLoading ? (
@@ -84,30 +80,33 @@ const FeaturedProducts = () => {
             <Loader2 className="w-8 h-8 animate-spin text-[#7B4B94]" />
           </div>
         ) : (
-          <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="grid grid-cols-2 gap-3 md:gap-6 lg:grid-cols-4 lg:gap-8">
             {featured.slice(0, 4).map((product, index) => (
-              <div key={product.id} data-aos="fade-up" data-aos-delay={index * 100}>
-                <ProductCard
-                  product={product}
-                  index={index}
-                  onQuickAdd={handleQuickAdd}
-                />
-              </div>
+              <ProductCard
+                key={product.id}
+                product={product}
+                index={index}
+                onQuickAdd={handleQuickAdd}
+              />
             ))}
           </div>
         )}
 
-        <div
-          data-aos="fade-up"
-          data-aos-delay="300"
-          className="mt-16 text-center"
-        >
-          <Button asChild size="lg" className="h-14 rounded-full px-10 bg-[#7B4B94] hover:bg-[#6A3F82] text-white font-semibold shadow-lg shadow-[#7B4B94]/20 transition-all hover:scale-105 hover:-translate-y-0.5">
-            <Link to="/products" className="inline-flex items-center gap-2">
-              View All Products
-              <ArrowRight className="w-4 h-4" />
-            </Link>
-          </Button>
+        <div className="mt-12 md:mt-16 text-center">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            viewport={{ once: true }}
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+          >
+            <Button asChild size="lg" className="h-14 rounded-full px-10 bg-[#7B4B94] hover:bg-[#6A3F82] text-white font-semibold shadow-lg shadow-[#7B4B94]/20 transition-colors">
+              <Link to="/products" className="inline-flex items-center gap-2">
+                View All Products
+                <ArrowRight className="w-4 h-4" />
+              </Link>
+            </Button>
+          </motion.div>
         </div>
       </div>
 

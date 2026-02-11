@@ -45,6 +45,53 @@ const CheckoutModal = ({ isOpen, onClose }: CheckoutModalProps) => {
         paymentMethod: 'cod' as 'cod' | 'instapay'
     });
 
+    const [isSubscribed, setIsSubscribed] = useState(false);
+    const [checkingSubscriber, setCheckingSubscriber] = useState(false);
+    const [discountPercent, setDiscountPercent] = useState(0);
+
+    const checkSubscription = async (email: string) => {
+        if (!email || !email.includes('@')) return;
+
+        setCheckingSubscriber(true);
+        try {
+            // 1. Check if subscriber
+            const { data: isSub, error } = await supabase.rpc('check_is_subscriber', {
+                email_input: email.toLowerCase().trim()
+            });
+
+            if (error) throw error;
+            setIsSubscribed(!!isSub);
+
+            if (isSub) {
+                // 2. Fetch discount percent from settings
+                const { data: settings, error: settingsError } = await supabase
+                    .from('store_settings')
+                    .select('value')
+                    .eq('key', 'newsletter_popup')
+                    .single();
+
+                if (!settingsError && settings?.value) {
+                    setDiscountPercent((settings.value as any).discount_percent || 10);
+                } else {
+                    setDiscountPercent(10); // Default fallback
+                }
+                toast.success('Subscriber discount detected! 10% off applied.');
+            } else {
+                setDiscountPercent(0);
+            }
+        } catch (error) {
+            console.error('Subscription check failed:', error);
+            setIsSubscribed(false);
+            setDiscountPercent(0);
+        } finally {
+            setCheckingSubscriber(false);
+        }
+    };
+
+    const finalTotal = isSubscribed
+        ? totalPrice * (1 - discountPercent / 100)
+        : totalPrice;
+
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
         setFormData(prev => ({ ...prev, [name]: value }));
@@ -89,7 +136,9 @@ const CheckoutModal = ({ isOpen, onClose }: CheckoutModalProps) => {
                         price: item.variant ? item.variant.price : item.product.price,
                         variant_name: item.variant?.name
                     })),
-                    total_amount: totalPrice,
+                    total_amount: finalTotal,
+                    is_discounted: isSubscribed,
+                    discount_percent: discountPercent,
                     turnstile_token: turnstileToken
                 }
             });
@@ -126,7 +175,7 @@ const CheckoutModal = ({ isOpen, onClose }: CheckoutModalProps) => {
                     order: {
                         id: orderId,
                         created_at: new Date().toISOString(),
-                        total_amount: totalPrice,
+                        total_amount: finalTotal,
                         is_paid: false,
                         // Map form data to database column names
                         customer_name: formData.name,
@@ -135,7 +184,9 @@ const CheckoutModal = ({ isOpen, onClose }: CheckoutModalProps) => {
                         address: formData.address,
                         governorate: formData.governorate,
                         city: formData.city,
-                        payment_method: formData.paymentMethod
+                        payment_method: formData.paymentMethod,
+                        is_discounted: isSubscribed,
+                        discount_percent: discountPercent
                     },
                     items: items
                 }
@@ -163,9 +214,27 @@ const CheckoutModal = ({ isOpen, onClose }: CheckoutModalProps) => {
                         </DialogTitle>
                         <DialogDescription className="text-[#7B4B94]/70 text-base">
                             Complete your purchase of <span className="font-semibold text-[#7B4B94]">{items.length} items</span>.
-                            <div className="mt-2 inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#E84A8A]/10 border border-[#E84A8A]/20">
-                                <span className="text-sm font-medium text-[#7B4B94]">Total:</span>
-                                <span className="font-bold text-[#E84A8A] text-lg">{totalPrice.toLocaleString()} EGP</span>
+                            <div className="mt-2 flex flex-col items-center gap-2">
+                                <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#E84A8A]/10 border border-[#E84A8A]/20">
+                                    <span className="text-sm font-medium text-[#7B4B94]">Total:</span>
+                                    {isSubscribed ? (
+                                        <div className="flex items-center gap-2">
+                                            <span className="text-sm text-[#7B4B94]/50 line-through">{totalPrice.toLocaleString()} EGP</span>
+                                            <span className="font-bold text-[#E84A8A] text-lg">{finalTotal.toLocaleString()} EGP</span>
+                                        </div>
+                                    ) : (
+                                        <span className="font-bold text-[#E84A8A] text-lg">{totalPrice.toLocaleString()} EGP</span>
+                                    )}
+                                </div>
+                                {isSubscribed && (
+                                    <motion.div
+                                        initial={{ opacity: 0, scale: 0.8 }}
+                                        animate={{ opacity: 1, scale: 1 }}
+                                        className="text-[10px] bg-green-500/10 text-green-600 px-3 py-1 rounded-full border border-green-500/20 font-bold uppercase tracking-wider"
+                                    >
+                                        Subscriber {discountPercent}% Discount Applied
+                                    </motion.div>
+                                )}
                             </div>
                         </DialogDescription>
                     </DialogHeader>
@@ -222,9 +291,13 @@ const CheckoutModal = ({ isOpen, onClose }: CheckoutModalProps) => {
                                                 placeholder="john@example.com"
                                                 value={formData.email}
                                                 onChange={handleInputChange}
+                                                onBlur={() => checkSubscription(formData.email)}
                                                 className="pl-10 h-11 bg-white border-[#E84A8A]/50 focus:border-[#E84A8A] focus:ring-[#E84A8A]/20 rounded-xl shadow-sm placeholder:text-[#7B4B94]/50"
                                             />
                                             <Mail className="absolute left-3.5 top-3.5 w-4 h-4 text-[#7B4B94]/30" />
+                                            {checkingSubscriber && (
+                                                <Loader2 className="absolute right-3 top-3.5 w-4 h-4 text-purple-500 animate-spin" />
+                                            )}
                                         </div>
                                     </div>
                                 </div>

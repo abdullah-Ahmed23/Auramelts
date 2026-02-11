@@ -12,14 +12,14 @@ const BrandStory = () => {
     },
     {
       icon: Leaf,
-      title: '100% Soy Wax',
+      title: '100% Nature Wax',
       desc: 'Clean-burning & eco-friendly',
       color: '#5CC5B5'
     },
     {
       icon: Clock,
       title: 'Long-Lasting',
-      desc: 'Up to 80+ hours of fragrance',
+      desc: '6 hours of fragrance',
       color: '#7B4B94'
     },
     {
@@ -111,7 +111,7 @@ const BrandStory = () => {
                 viewport={{ once: true }}
                 transition={{ duration: 0.5, delay: 0.1 * index }}
                 whileHover={{ y: -6 }}
-                className="group relative p-6 md:p-7 rounded-3xl bg-white border border-[#E84A8A]/15 shadow-lg shadow-[#E84A8A]/5 hover:shadow-xl hover:shadow-[#E84A8A]/10 transition-all duration-300 overflow-hidden"
+                className="group relative p-6 md:p-7 rounded-3xl bg-white border border-[#E84A8A]/15 shadow-lg shadow-[#E84A8A]/5 hover:shadow-xl hover:shadow-[#E84A8A]/10 transition-[border-color,box-shadow] duration-300 overflow-hidden"
               >
                 {/* Glow on Hover */}
                 <div
@@ -155,8 +155,8 @@ const BrandStory = () => {
         >
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
             {[
-              { value: '5000+', label: 'Happy Customers', color: '#E84A8A' },
-              { value: '50+', label: 'Unique Scents', color: '#5CC5B5' },
+              { value: '150', label: 'Happy Customers', color: '#E84A8A' },
+              { value: '50+', label: 'Unique Senses', color: '#5CC5B5' },
               { value: '100%', label: 'Natural Ingredients', color: '#F5A623' },
               { value: '4.9★', label: 'Average Rating', color: '#7B4B94' },
             ].map((stat, i) => (

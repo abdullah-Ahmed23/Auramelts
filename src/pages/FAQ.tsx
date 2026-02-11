@@ -7,7 +7,7 @@ import PageTransition from '@/components/PageTransition';
 const faqs = [
   {
     q: 'What wax do you use for your candles?',
-    a: 'All our candles are made with 100% natural soy wax. Soy wax burns cleaner and longer than paraffin, and is a renewable, biodegradable resource.',
+    a: 'All our candles are made with 100% nature wax. Nature wax burns cleaner and longer than paraffin, and is a renewable, biodegradable resource.',
   },
   {
     q: 'How long do your candles burn?',

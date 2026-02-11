@@ -5,8 +5,9 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import { CartProvider } from "@/contexts/CartContext";
 import { AnimatePresence } from "framer-motion";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useWebVitals } from "@/hooks/useWebVitals";
+import SplashScreen from "./components/ui/SplashScreen";
 import Index from "./pages/Index";
 import Products from "./pages/Products";
 import ProductDetail from "./pages/ProductDetail";
@@ -24,7 +25,14 @@ import CategoriesManager from "./pages/admin/CategoriesManager";
 import MessagesManager from "./pages/admin/MessagesManager";
 import FeedbackManager from "./pages/admin/FeedbackManager";
 import AdminLogin from "./pages/admin/Login";
+import FeaturedProducts from './components/home/FeaturedProducts';
+import BrandStory from './components/home/BrandStory';
+import Newsletter from './components/home/Newsletter';
+import NewsletterPopup from './components/newsletter/NewsletterPopup';
+import Testimonials from './components/home/Testimonials';
+import CartDrawer from './components/layout/CartDrawer';
 import AdminRoute from "./components/admin/AdminRoute";
+import Subscribers from "./pages/admin/Subscribers";
 import ActivityLogs from "./pages/admin/ActivityLogs";
 import DebugLogs from "./pages/admin/DebugLogs";
 import ScrollToTop from "./components/ScrollToTop";
@@ -59,6 +67,7 @@ const AnimatedRoutes = () => {
             <Route path="orders" element={<OrdersManager />} />
             <Route path="messages" element={<MessagesManager />} />
             <Route path="feedback" element={<FeedbackManager />} />
+            <Route path="subscribers" element={<Subscribers />} />
             <Route path="activity" element={<ActivityLogs />} />
             <Route path="debug" element={<DebugLogs />} />
           </Route>
@@ -91,16 +100,37 @@ const App = () => {
     };
   }, []);
 
+  // Loading State for Splash Screen
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    // Simulate initial asset loading
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 2500); // 2.5s for a nice premium feel
+
+    return () => clearTimeout(timer);
+  }, []);
+
   return (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
         <CartProvider>
           <Toaster />
           <Sonner />
-          <BrowserRouter>
-            <ScrollToTop />
-            <AnimatedRoutes />
-          </BrowserRouter>
+          <AnimatePresence mode="wait">
+            {isLoading && <SplashScreen />}
+          </AnimatePresence>
+
+          {!isLoading && (
+            <BrowserRouter>
+              <ScrollToTop />
+              <CartDrawer />
+              <NewsletterPopup />
+              <AnimatedRoutes />
+            </BrowserRouter>
+          )}
+
         </CartProvider>
       </TooltipProvider>
     </QueryClientProvider>

@@ -94,32 +94,7 @@ const Footer = () => {
             </ul>
           </div>
 
-          {/* Newsletter */}
-          <div data-aos="fade-up" data-aos-delay="300" className="lg:col-span-4 space-y-6">
-            <div className="bg-white/5 backdrop-blur-md rounded-2xl p-6 border border-white/10 shadow-xl">
-              <h4 className="font-heading text-xl font-semibold text-white mb-2">Join Our Inner Circle</h4>
-              <p className="text-gray-400 text-sm mb-4">
-                Subscribe to receive updates, access to exclusive deals, and 10% off your first order.
-              </p>
-              <form className="space-y-3" onSubmit={(e) => e.preventDefault()}>
-                <div className="relative">
-                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500" />
-                  <input
-                    type="email"
-                    placeholder="Your email address"
-                    className="w-full bg-white/10 border border-white/10 rounded-xl py-3 pl-10 pr-4 text-sm text-white placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/50 transition-all"
-                  />
-                </div>
-                <button
-                  type="submit"
-                  className="w-full bg-primary hover:bg-primary/90 text-white font-medium py-3 rounded-xl transition-all duration-300 flex items-center justify-center gap-2 group"
-                >
-                  <span>Subscribe Now</span>
-                  <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
-                </button>
-              </form>
-            </div>
-          </div>
+
         </div>
 
         {/* Bottom Bar */}

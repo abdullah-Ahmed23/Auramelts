@@ -258,7 +258,7 @@ const FeedbackForm = () => {
                                     disabled={isSubmitting || isSubmitted}
                                     whileHover={{ scale: 1.02 }}
                                     whileTap={{ scale: 0.98 }}
-                                    className={`w-full flex items-center justify-center gap-3 px-6 py-4 rounded-xl font-semibold text-sm uppercase tracking-wider transition-all ${isSubmitted
+                                    className={`w-full flex items-center justify-center gap-3 px-6 py-4 rounded-xl font-semibold text-sm uppercase tracking-wider transition-colors ${isSubmitted
                                         ? 'bg-[#5CC5B5] text-white'
                                         : 'bg-gradient-to-r from-[#E84A8A] to-[#7B4B94] text-white hover:shadow-lg hover:shadow-[#E84A8A]/30'
                                         }`}

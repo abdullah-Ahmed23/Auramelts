@@ -1,20 +1,48 @@
 
+// @ts-ignore: Deno is provided by the Supabase Edge Function environment
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
+
+// Minimal declaration for local IDE support (standard TS doesn't know Deno)
+declare const Deno: any;
 
 const corsHeaders = {
     'Access-Control-Allow-Origin': '*',
     'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 }
 
-console.log("Hello from Functions!")
+interface Variant {
+    name: string;
+    stock: number;
+    price: number;
+}
 
-Deno.serve(async (req) => {
+interface Product {
+    id: string;
+    name: string;
+    stock: number | null;
+    variants: Variant[] | null;
+    price: number;
+}
+
+interface OrderItem {
+    product_id: string;
+    quantity: number;
+    price: number;
+    variant_name?: string;
+}
+
+interface OrderResponse {
+    id: string;
+}
+
+Deno.serve(async (req: Request) => {
     // Handle CORS
     if (req.method === 'OPTIONS') {
         return new Response('ok', { headers: corsHeaders })
     }
 
     try {
+        const body = await req.json();
         const {
             name,
             email,
@@ -24,9 +52,24 @@ Deno.serve(async (req) => {
             city,
             items,
             total_amount,
+            is_discounted,
+            discount_percent,
             payment_method,
             turnstile_token
-        } = await req.json()
+        } = body as {
+            name: string;
+            email: string;
+            phone: string;
+            address: string;
+            governorate: string;
+            city: string;
+            items: OrderItem[];
+            total_amount: number;
+            is_discounted?: boolean;
+            discount_percent?: number;
+            payment_method: string;
+            turnstile_token: string;
+        }
 
         // 1. Validate CAPTCHA with Cloudflare
         const ip = req.headers.get('cf-connecting-ip')
@@ -59,25 +102,23 @@ Deno.serve(async (req) => {
             Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
         )
 
-        // --- NEW: Stock Management Logic ---
-        const productIds = [...new Set(items.map((item: any) => item.product_id))];
-        const { data: products, error: productsError } = await supabaseClient
+        // --- Stock Management Logic ---
+        const productIds = [...new Set(items.map((item) => item.product_id))];
+        const { data: productsData, error: productsError } = await supabaseClient
             .from('products')
             .select('*')
             .in('id', productIds);
 
         if (productsError) throw new Error('Failed to fetch product stock');
 
-        const productMap = new Map(products.map((p: any) => [p.id, p]));
-        const updates: any[] = [];
+        const products = (productsData || []) as Product[];
+        const productMap = new Map<string, Product>(products.map((p) => [p.id, p]));
+        const updates: Product[] = [];
 
         // Validate and Prepare Updates
         for (const item of items) {
             const product = productMap.get(item.product_id);
             if (!product) throw new Error(`Product not found: ${item.product_id}`);
-
-            // Deep clone to avoid mutating the map if we have multiple items for same product (e.g. diff variants)
-            // Actually we SHOULD mutate the map object so subsequent items see the reduced stock
 
             if (item.variant_name) {
                 // Handle Variant Stock
@@ -85,7 +126,7 @@ Deno.serve(async (req) => {
                     throw new Error(`Product ${product.name} has no variants but variant selected`);
                 }
 
-                const variantIndex = product.variants.findIndex((v: any) => v.name === item.variant_name);
+                const variantIndex = product.variants.findIndex((v) => v.name === item.variant_name);
                 if (variantIndex === -1) throw new Error(`Variant ${item.variant_name} not found for ${product.name}`);
 
                 const variant = product.variants[variantIndex];
@@ -103,7 +144,7 @@ Deno.serve(async (req) => {
                 // Update stock in memory
                 product.variants[variantIndex].stock = currentStock - item.quantity;
 
-                // NEW: Also update the root stock if it exists, so the admin panel shows the correct total
+                // Update root stock if it exists
                 if (product.stock !== undefined && product.stock !== null) {
                     const rootStock = Number(product.stock);
                     if (!isNaN(rootStock)) {
@@ -151,11 +192,10 @@ Deno.serve(async (req) => {
                 throw new Error(`Failed to update inventory for ${update.name}`);
             }
         }
-        // --- End Stock Management ---
 
         // 3. Create Order
         console.log('Stock updated. Creating order...');
-        const { data: order, error: orderError } = await supabaseClient
+        const { data: orderData, error: orderError } = await supabaseClient
             .from('orders')
             .insert([
                 {
@@ -168,19 +208,23 @@ Deno.serve(async (req) => {
                     total_amount: total_amount,
                     status: 'pending',
                     payment_method: payment_method,
-                    is_paid: false
+                    is_paid: false,
+                    is_discounted: is_discounted || false,
+                    discount_percent: discount_percent || 0
                 }
             ])
-            .select()
+            .select('id')
             .single()
 
-        if (orderError) {
+        if (orderError || !orderData) {
             console.error('Order creation failed:', orderError);
-            throw orderError;
+            throw orderError || new Error('Failed to create order entry');
         }
 
+        const order = orderData as OrderResponse;
+
         // 4. Create Order Items
-        const orderItems = items.map((item: any) => ({
+        const orderItems = items.map((item) => ({
             order_id: order.id,
             product_id: item.product_id,
             quantity: item.quantity,
@@ -214,3 +258,5 @@ Deno.serve(async (req) => {
         )
     }
 })
+
+

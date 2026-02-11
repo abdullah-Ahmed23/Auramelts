@@ -2,8 +2,28 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
+import { motion } from 'framer-motion';
 import { supabase } from '@/lib/supabase';
 import { ImageOptimizer } from '@/components/ImageOptimizer';
+
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.1
+    }
+  }
+};
+
+const cardVariants = {
+  hidden: { opacity: 0, y: 30 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.6, ease: "easeOut" }
+  }
+};
 
 const CategoryCards = () => {
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
@@ -27,8 +47,11 @@ const CategoryCards = () => {
       <div className="container relative mx-auto px-4 md:px-8 max-w-7xl z-10">
         {/* Header */}
         <div className="mb-16 md:mb-20 text-center">
-          <div
-            data-aos="fade-up"
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
           >
             <span className="inline-flex items-center gap-2 px-5 py-2 mb-6 text-xs font-semibold tracking-[0.2em] uppercase text-[#7B4B94] bg-[#7B4B94]/10 rounded-full border border-[#7B4B94]/20">
               <span className="w-1.5 h-1.5 rounded-full bg-[#E84A8A]" />
@@ -40,19 +63,25 @@ const CategoryCards = () => {
             <p className="text-lg text-[#7B4B94]/70 max-w-xl mx-auto leading-relaxed">
               Each collection is thoughtfully curated to match every moment of your day.
             </p>
-          </div>
+          </motion.div>
         </div>
 
         {/* Grid */}
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-6">
+        <motion.div
+          className="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-6"
+          variants={containerVariants}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: "-50px" }}
+        >
           {categories.map((cat: any, i: number) => {
             const isHovered = hoveredIndex === i;
 
             return (
-              <div
+              <motion.div
                 key={cat.id}
-                data-aos="fade-up"
-                data-aos-delay={i * 100}
+                variants={cardVariants}
+                className="h-full"
               >
                 <Link
                   to={`/products?category=${cat.slug}`}
@@ -60,8 +89,13 @@ const CategoryCards = () => {
                   onMouseLeave={() => setHoveredIndex(null)}
                   className="group relative block h-full"
                 >
-                  <div
-                    className="relative h-full min-h-[200px] md:min-h-[260px] p-6 md:p-8 rounded-3xl bg-white overflow-hidden border border-[#E84A8A]/20 shadow-lg shadow-[#E84A8A]/10 hover:shadow-xl hover:shadow-[#E84A8A]/15 transition-all duration-300 hover:-translate-y-2"
+                  <motion.div
+                    className="relative h-full min-h-[200px] md:min-h-[260px] p-6 md:p-8 rounded-3xl bg-white overflow-hidden border border-[#E84A8A]/20 shadow-lg shadow-[#E84A8A]/5"
+                    whileHover={{
+                      y: -10,
+                      boxShadow: "0 20px 40px -10px rgba(232, 74, 138, 0.15)",
+                      transition: { duration: 0.3 }
+                    }}
                   >
                     {/* Image Background */}
                     {cat.image && (
@@ -119,26 +153,31 @@ const CategoryCards = () => {
                         </div>
                       </div>
                     </div>
-                  </div>
+                  </motion.div>
                 </Link>
-              </div>
+              </motion.div>
             );
           })}
-        </div>
+        </motion.div>
 
         {/* View All Button */}
         <div
-          data-aos="fade-up"
-          data-aos-delay="400"
           className="mt-12 md:mt-16 text-center"
         >
-          <Link
-            to="/products"
-            className="group inline-flex items-center gap-3 px-8 py-4 bg-[#7B4B94] text-white rounded-full font-semibold text-sm tracking-wide hover:bg-[#6A3F82] transition-all hover:shadow-xl hover:shadow-[#7B4B94]/30 hover:-translate-y-1"
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.4, duration: 0.6 }}
           >
-            View All Products
-            <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
-          </Link>
+            <Link
+              to="/products"
+              className="group inline-flex items-center gap-3 px-8 py-4 bg-[#7B4B94] text-white rounded-full font-semibold text-sm tracking-wide hover:bg-[#6A3F82] transition-colors hover:shadow-xl hover:shadow-[#7B4B94]/30"
+            >
+              View All Products
+              <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
+            </Link>
+          </motion.div>
         </div>
       </div>
     </section>

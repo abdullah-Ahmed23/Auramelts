@@ -164,6 +164,7 @@ const AdminLayout = () => {
         { title: 'Orders', icon: ShoppingBag, path: '/admin/orders' },
         { title: 'Messages', icon: MessageSquare, path: '/admin/messages' },
         { title: 'Feedback', icon: Star, path: '/admin/feedback' },
+        { title: 'Subscribers', icon: Users, path: '/admin/subscribers' },
         { title: 'Activity', icon: Activity, path: '/admin/activity' },
     ];
 

@@ -139,7 +139,7 @@ const MessagesManager = () => {
                                 animate={{ opacity: 1, y: 0 }}
                                 exit={{ opacity: 0, scale: 0.95 }}
                                 className={cn(
-                                    "p-6 rounded-2xl border backdrop-blur-xl transition-all group relative overflow-hidden",
+                                    "p-6 rounded-2xl border backdrop-blur-xl group relative overflow-hidden",
                                     msg.status === 'unread'
                                         ? "bg-purple-500/[0.03] border-purple-500/20 shadow-[0_0_20px_-10px_rgba(168,85,247,0.1)]"
                                         : "bg-white/5 border-white/5 hover:border-white/10"

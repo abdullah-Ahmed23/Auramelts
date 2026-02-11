@@ -6,7 +6,7 @@ import { Link } from 'react-router-dom';
 const faqs = [
     {
         q: 'What wax do you use for your candles?',
-        a: 'All our candles are made with 100% natural soy wax. Soy wax burns cleaner and longer than paraffin, and is a renewable, biodegradable resource.',
+        a: 'All our candles are made with 100% nature wax. Nature wax burns cleaner and longer than paraffin, and is a renewable, biodegradable resource.',
     },
     {
         q: 'How long do your candles burn?',
@@ -54,7 +54,7 @@ const MiniFAQ = () => {
                                 <span className="italic font-serif font-normal text-[#E84A8A]">Want to Know</span>
                             </h2>
                             <p className="text-[#7B4B94]/70 text-lg mb-8 leading-relaxed">
-                                Everything you need to know about our handcrafted soy candles and wax melts. Can't find the answer you're looking for?
+                                Everything you need to know about our handcrafted nature wax candles and wax melts. Can't find the answer you're looking for?
                             </p>
 
                             <Link
@@ -79,8 +79,8 @@ const MiniFAQ = () => {
                             >
                                 <div
                                     className={`group rounded-2xl bg-white transition-all duration-300 border ${openIndex === index
-                                            ? 'border-[#E84A8A] shadow-lg shadow-[#E84A8A]/10'
-                                            : 'border-transparent shadow-sm hover:shadow-md hover:border-[#E84A8A]/30'
+                                        ? 'border-[#E84A8A] shadow-lg shadow-[#E84A8A]/10'
+                                        : 'border-transparent shadow-sm hover:shadow-md hover:border-[#E84A8A]/30'
                                         }`}
                                 >
                                     <button
@@ -95,8 +95,8 @@ const MiniFAQ = () => {
                                         </span>
                                         <span
                                             className={`flex-shrink-0 ml-4 flex items-center justify-center w-10 h-10 rounded-full transition-all duration-300 ${openIndex === index
-                                                    ? 'bg-[#E84A8A] text-white rotate-180'
-                                                    : 'bg-[#FDF8F4] text-[#7B4B94] group-hover:bg-[#E84A8A]/10'
+                                                ? 'bg-[#E84A8A] text-white rotate-180'
+                                                : 'bg-[#FDF8F4] text-[#7B4B94] group-hover:bg-[#E84A8A]/10'
                                                 }`}
                                         >
                                             {openIndex === index ? <Minus className="w-5 h-5" /> : <Plus className="w-5 h-5" />}

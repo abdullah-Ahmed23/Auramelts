@@ -78,9 +78,9 @@ const ProductDetail = () => {
           <div className="container mx-auto px-4">
             {/* Breadcrumb */}
             <div className="mb-6 flex items-center gap-2 text-sm text-muted-foreground">
-              <Link to="/" className="hover:text-primary">Home</Link>
+              <Link to="/" className="hover:text-primary flex items-center h-auto min-h-0">Home</Link>
               <span>/</span>
-              <Link to="/products" className="hover:text-primary">Shop</Link>
+              <Link to="/products" className="hover:text-primary flex items-center h-auto min-h-0">Shop</Link>
               <span>/</span>
               <span className="text-foreground">{product.name}</span>
             </div>

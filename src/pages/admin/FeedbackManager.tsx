@@ -120,7 +120,7 @@ const FeedbackManager = () => {
                             initial={{ opacity: 0, scale: 0.95 }}
                             animate={{ opacity: 1, scale: 1 }}
                             exit={{ opacity: 0, scale: 0.95 }}
-                            className={`p-6 rounded-[2rem] border backdrop-blur-xl group transition-all flex flex-col h-full relative ${item.is_approved
+                            className={`p-6 rounded-[2rem] border backdrop-blur-xl group flex flex-col h-full relative ${item.is_approved
                                 ? 'bg-emerald-500/5 border-emerald-500/20'
                                 : 'bg-white/5 border-white/10'
                                 }`}

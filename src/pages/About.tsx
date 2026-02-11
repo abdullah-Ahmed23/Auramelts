@@ -5,16 +5,16 @@ import PageTransition from '@/components/PageTransition';
 
 const values = [
   { icon: Heart, title: 'Handcrafted with Love', desc: 'Every product is carefully hand-poured in small batches to ensure the highest quality.', color: '#E84A8A' },
-  { icon: Leaf, title: 'Natural & Sustainable', desc: 'We use 100% soy wax, cotton wicks, and eco-friendly packaging materials.', color: '#5CC5B5' },
+  { icon: Leaf, title: 'Natural & Sustainable', desc: 'We use 100% nature wax, cotton wicks, and eco-friendly packaging materials.', color: '#5CC5B5' },
   { icon: Sparkles, title: 'Unique Fragrances', desc: 'Our scent blends are custom-crafted using premium essential oils and fragrance oils.', color: '#F5A623' },
   { icon: Sun, title: 'Slow Living', desc: 'We believe in taking time to enjoy life\'s simple pleasures — starting with a beautiful candle.', color: '#7B4B94' },
 ];
 
 const stats = [
-  { label: 'Natural Soy Wax', value: '100%', icon: Leaf },
+  { label: 'Nature Wax', value: '100%', icon: Leaf },
   { label: 'Handmade', value: 'Egy', icon: Heart },
   { label: 'Vegan Friendly', value: 'Yes', icon: Sprout },
-  { label: 'Happy Customers', value: '500+', icon: Star },
+  { label: 'Happy Customers', value: '150', icon: Star },
 ];
 
 const About = () => {
@@ -86,17 +86,17 @@ const About = () => {
               >
                 <div className="absolute inset-0 bg-gradient-to-tr from-[#E84A8A]/20 to-transparent rounded-[2rem] transform rotate-3 scale-105 blur-sm" />
                 <div className="relative bg-white p-8 md:p-12 rounded-[2rem] shadow-xl shadow-[#7B4B94]/10 border border-[#E84A8A]/10">
-                  <h3 className="text-3xl font-bold text-[#7B4B94] mb-6">From Our Kitchen <br />To Your Home</h3>
+                  <h3 className="text-3xl font-bold text-[#7B4B94] mb-6">Our Lab <br />To Your Home</h3>
                   <div className="space-y-4 text-[#7B4B94]/80 leading-relaxed">
                     <p>
-                      It started as a weekend hobby in a tiny kitchen, experimenting with essential oils and melted wax.
+                      It started as a weekend hobby in a tiny room, experimenting with essential oils and melted wax.
                       We were tired of mass-produced candles that gave us headaches or lost their scent after one burn.
                     </p>
                     <p>
                       We wanted something better. Cleaner. More intentional.
                     </p>
                     <p>
-                      Countless test batches later, we found our perfect blend: 100% natural soy wax, clean fragrances,
+                      Countless test batches later, we found our perfect blend: 100% nature wax, clean fragrances,
                       and cotton wicks. No shortcuts, no additives, just pure, consistent burn.
                     </p>
                   </div>
@@ -146,7 +146,7 @@ const About = () => {
                     viewport={{ once: true }}
                     transition={{ delay: index * 0.1 }}
                     whileHover={{ y: -8 }}
-                    className="group relative bg-white rounded-3xl p-8 border border-transparent hover:border-[#E84A8A]/20 shadow-lg shadow-[#7B4B94]/5 hover:shadow-2xl hover:shadow-[#E84A8A]/10 transition-all duration-300 overflow-hidden"
+                    className="group relative bg-white rounded-3xl p-8 border border-transparent hover:border-[#E84A8A]/20 shadow-lg shadow-[#7B4B94]/5 hover:shadow-2xl hover:shadow-[#E84A8A]/10 transition-[border-color,box-shadow] duration-300 overflow-hidden"
                   >
                     <div
                       className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-transparent to-current opacity-5 rounded-bl-[100px] transition-opacity group-hover:opacity-10"

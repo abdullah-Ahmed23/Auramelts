@@ -14,8 +14,8 @@ export default {
     },
     extend: {
       fontFamily: {
-        heading: ['"Playfair Display"', 'serif'],
-        body: ['"Nunito"', 'sans-serif'],
+        heading: ['"Poppins"', 'sans-serif'],
+        body: ['"Poppins"', 'sans-serif'],
       },
       fontSize: {
         // Fluid typography using clamp() for responsive scaling
