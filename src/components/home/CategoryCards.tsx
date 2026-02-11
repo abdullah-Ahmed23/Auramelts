@@ -6,6 +6,8 @@ import { motion, Variants } from 'framer-motion';
 import { supabase } from '@/lib/supabase';
 import { ImageOptimizer } from '@/components/ImageOptimizer';
 
+import { Skeleton } from '@/components/ui/skeleton';
+
 const containerVariants: Variants = {
   hidden: { opacity: 0 },
   visible: {
@@ -33,7 +35,7 @@ const CategoryCards = () => {
   const [activeDot, setActiveDot] = useState(0);
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
 
-  const { data: categories = [] } = useQuery({
+  const { data: categories = [], isLoading } = useQuery({
     queryKey: ['categories'],
     queryFn: async () => {
       const { data, error } = await supabase.from('categories').select('*').order('name').limit(6);
@@ -133,90 +135,115 @@ const CategoryCards = () => {
           whileInView="visible"
           viewport={{ once: true, margin: "-50px" }}
         >
-          {categories.map((cat: any, i: number) => {
-            const isHovered = hoveredIndex === i;
-
-            return (
-              <motion.div
-                key={cat.id}
-                variants={cardVariants}
+          {isLoading ? (
+            // Skeleton Loading State
+            Array.from({ length: 3 }).map((_, i) => (
+              <div
+                key={`skeleton-${i}`}
                 className="h-[400px] min-w-[280px] w-[90vw] md:w-auto md:h-full snap-center flex-shrink-0"
               >
-                <Link
-                  to={`/products?category=${cat.slug}`}
-                  onMouseEnter={() => setHoveredIndex(i)}
-                  onMouseLeave={() => setHoveredIndex(null)}
-                  className="group relative block h-full select-none"
-                  draggable="false"
+                <div className="h-full p-6 md:p-8 rounded-3xl bg-white border border-[#E84A8A]/10 shadow-sm overflow-hidden flex flex-col justify-between">
+                  {/* Fake Image Area */}
+                  <Skeleton className="w-full h-1/2 rounded-2xl bg-[#7B4B94]/5" />
+
+                  {/* Fake Content Area */}
+                  <div className="space-y-3">
+                    <Skeleton className="h-4 w-16 rounded-full bg-[#E84A8A]/10" />
+                    <Skeleton className="h-8 w-3/4 rounded-lg bg-[#7B4B94]/10" />
+                    <div className="flex justify-between items-center mt-4">
+                      <Skeleton className="h-4 w-24 rounded bg-[#7B4B94]/5" />
+                      <Skeleton className="h-10 w-10 rounded-full bg-[#E84A8A]/10" />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ))
+          ) : (
+            categories.map((cat: any, i: number) => {
+              const isHovered = hoveredIndex === i;
+
+              return (
+                <motion.div
+                  key={cat.id}
+                  variants={cardVariants}
+                  className="h-[400px] min-w-[280px] w-[90vw] md:w-auto md:h-full snap-center flex-shrink-0"
                 >
-                  <motion.div
-                    className="relative h-full min-h-[260px] p-6 md:p-8 rounded-3xl bg-white overflow-hidden border border-[#E84A8A]/20 shadow-lg shadow-[#E84A8A]/5"
-                    whileHover={{
-                      y: -10,
-                      boxShadow: "0 20px 40px -10px rgba(232, 74, 138, 0.15)",
-                      transition: { duration: 0.3 }
-                    }}
+                  <Link
+                    to={`/products?category=${cat.slug}`}
+                    onMouseEnter={() => setHoveredIndex(i)}
+                    onMouseLeave={() => setHoveredIndex(null)}
+                    className="group relative block h-full select-none"
+                    draggable="false"
                   >
-                    {/* Image Background */}
-                    {cat.image ? (
-                      <div className="absolute inset-0 z-0">
-                        <ImageOptimizer
-                          src={cat.image}
-                          alt={cat.name}
-                          width={400}
-                          height={300}
-                          className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-                          priority={i < 3}
-                          sizes="(max-width: 768px) 50vw, 33vw"
-                        />
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-60" />
-                      </div>
-                    ) : (
-                      <div className="absolute inset-0 bg-gradient-to-br from-[#5CC5B5]/5 to-[#E84A8A]/5 opacity-60" />
-                    )}
-
-                    {/* Accent Circle - Only if no image */}
-                    {!cat.image && (
-                      <div
-                        className={`absolute -top-10 -right-10 w-32 h-32 rounded-full bg-[#5CC5B5] transition-all duration-400 ${isHovered ? 'scale-125 opacity-25' : 'scale-100 opacity-10'}`}
-                      />
-                    )}
-
-                    {/* Content - Floating Glass Island */}
-                    <div className="relative z-10 h-full flex flex-col justify-end p-4">
-                      {/* Icon Fallback - Only show if NO image */}
-                      {!cat.image && (
-                        <div className="mb-auto pt-6 flex justify-center">
-                          <div
-                            className={`inline-flex items-center justify-center w-20 h-20 rounded-full bg-white shadow-sm border border-[#E84A8A]/10 text-4xl transition-transform duration-300 ${isHovered ? 'scale-110 rotate-3' : ''}`}
-                          >
-                            {cat.icon || '✨'}
-                          </div>
+                    <motion.div
+                      className="relative h-full min-h-[260px] p-6 md:p-8 rounded-3xl bg-white overflow-hidden border border-[#E84A8A]/20 shadow-lg shadow-[#E84A8A]/5"
+                      whileHover={{
+                        y: -10,
+                        boxShadow: "0 20px 40px -10px rgba(232, 74, 138, 0.15)",
+                        transition: { duration: 0.3 }
+                      }}
+                    >
+                      {/* Image Background */}
+                      {cat.image ? (
+                        <div className="absolute inset-0 z-0">
+                          <ImageOptimizer
+                            src={cat.image}
+                            alt={cat.name}
+                            width={400}
+                            height={300}
+                            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                            priority={i < 3}
+                            sizes="(max-width: 768px) 50vw, 33vw"
+                          />
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-60" />
                         </div>
+                      ) : (
+                        <div className="absolute inset-0 bg-gradient-to-br from-[#5CC5B5]/5 to-[#E84A8A]/5 opacity-60" />
                       )}
 
-                      {/* Glass Info Box */}
-                      <div className={`backdrop-blur-md border p-4 rounded-2xl shadow-sm translate-y-2 group-hover:translate-y-0 transition-transform duration-300 ${cat.image ? 'bg-white/90 border-white/50' : 'bg-white/80 border-[#E84A8A]/10'}`}>
-                        <div className="flex items-center justify-between">
-                          <div>
-                            <h3 className="text-xl font-bold text-[#2A2A2A] leading-tight">
-                              {cat.name}
-                            </h3>
-                            <p className="text-xs font-semibold text-[#E84A8A] mt-1 tracking-wide uppercase">
-                              Shop Collection
-                            </p>
+                      {/* Accent Circle - Only if no image */}
+                      {!cat.image && (
+                        <div
+                          className={`absolute -top-10 -right-10 w-32 h-32 rounded-full bg-[#5CC5B5] transition-all duration-400 ${isHovered ? 'scale-125 opacity-25' : 'scale-100 opacity-10'}`}
+                        />
+                      )}
+
+                      {/* Content - Floating Glass Island */}
+                      <div className="relative z-10 h-full flex flex-col justify-end p-4">
+                        {/* Icon Fallback - Only show if NO image */}
+                        {!cat.image && (
+                          <div className="mb-auto pt-6 flex justify-center">
+                            <div
+                              className={`inline-flex items-center justify-center w-20 h-20 rounded-full bg-white shadow-sm border border-[#E84A8A]/10 text-4xl transition-transform duration-300 ${isHovered ? 'scale-110 rotate-3' : ''}`}
+                            >
+                              {cat.icon || '✨'}
+                            </div>
                           </div>
-                          <div className="w-10 h-10 rounded-full bg-[#E84A8A] flex items-center justify-center text-white shrink-0 group-hover:scale-110 transition-transform shadow-md shadow-[#E84A8A]/20">
-                            <ArrowRight className="w-5 h-5 -rotate-45 group-hover:rotate-0 transition-transform" />
+                        )}
+
+                        {/* Glass Info Box */}
+                        <div className={`backdrop-blur-md border p-4 rounded-2xl shadow-sm translate-y-2 group-hover:translate-y-0 transition-transform duration-300 ${cat.image ? 'bg-white/90 border-white/50' : 'bg-white/80 border-[#E84A8A]/10'}`}>
+                          <div className="flex items-center justify-between">
+                            <div>
+                              <h3 className="text-xl font-bold text-[#2A2A2A] leading-tight">
+                                {cat.name}
+                              </h3>
+                              <p className="text-xs font-semibold text-[#E84A8A] mt-1 tracking-wide uppercase">
+                                Shop Collection
+                              </p>
+                            </div>
+                            <div className="w-10 h-10 rounded-full bg-[#E84A8A] flex items-center justify-center text-white shrink-0 group-hover:scale-110 transition-transform shadow-md shadow-[#E84A8A]/20">
+                              <ArrowRight className="w-5 h-5 -rotate-45 group-hover:rotate-0 transition-transform" />
+                            </div>
                           </div>
                         </div>
                       </div>
-                    </div>
-                  </motion.div>
-                </Link>
-              </motion.div>
-            );
-          })}
+                    </motion.div>
+                  </Link>
+                </motion.div>
+              );
+            })
+          )}
         </motion.div>
 
         {/* Navigation Dots (Mobile Only) */}

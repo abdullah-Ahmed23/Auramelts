@@ -8,6 +8,7 @@ import QuickAddModal from '../products/QuickAddModal';
 import { ArrowRight, Loader2 } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/lib/supabase';
+import { Skeleton } from '@/components/ui/skeleton';
 
 const FeaturedProducts = () => {
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
@@ -76,8 +77,25 @@ const FeaturedProducts = () => {
         </div>
 
         {isLoading ? (
-          <div className="flex justify-center py-20">
-            <Loader2 className="w-8 h-8 animate-spin text-[#7B4B94]" />
+          <div className="grid grid-cols-2 gap-3 md:gap-6 lg:grid-cols-4 lg:gap-8">
+            {Array.from({ length: 4 }).map((_, i) => (
+              <div key={`skeleton-${i}`} className="group">
+                {/* Fake Image Area */}
+                <div className="relative overflow-hidden rounded-2xl border border-[#E6C9C9]/30 bg-white aspect-[4/5] mb-4">
+                  <Skeleton className="h-full w-full bg-[#E84A8A]/5" />
+                </div>
+                {/* Fake Content Area */}
+                <div className="space-y-3 px-2">
+                  <div className="flex justify-center gap-1">
+                    <Skeleton className="h-3 w-3 rounded-full" />
+                    <Skeleton className="h-3 w-3 rounded-full" />
+                    <Skeleton className="h-3 w-3 rounded-full" />
+                  </div>
+                  <Skeleton className="h-6 w-3/4 mx-auto rounded-lg bg-[#7B4B94]/10" />
+                  <Skeleton className="h-4 w-1/2 mx-auto rounded bg-[#E84A8A]/10" />
+                </div>
+              </div>
+            ))}
           </div>
         ) : (
           <div className="grid grid-cols-2 gap-3 md:gap-6 lg:grid-cols-4 lg:gap-8">
