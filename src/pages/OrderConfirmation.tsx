@@ -186,7 +186,7 @@ const OrderConfirmation = () => {
                         {/* Footer Message */}
                         <div className="text-center border-t pt-8">
                             <p className="text-gray-500 text-sm">
-                                Need help? Call us at <a href="tel:+201018405310" className="text-[#7B4B94] font-semibold hover:text-[#E84A8A] transition-colors">+20 10 18405310</a>
+                                Need help? Call us at <a href="tel:+201276417277" className="text-[#7B4B94] font-semibold hover:text-[#E84A8A] transition-colors">+20 12 76417277</a>
                             </p>
                             <p className="mt-2 text-xs text-gray-400">Aura Melts - Handcrafted with Love</p>
                         </div>

@@ -99,7 +99,7 @@ const Privacy = () => {
                                 </p>
                                 <div className="pl-11 pt-2">
                                     <p className="text-[#7B4B94] font-semibold">Aura Melts Support</p>
-                                    <a href="mailto:support@auramelts.com" className="text-[#E84A8A] hover:underline">support@auramelts.com</a>
+                                    <a href="tel:+201276417277" className="text-[#E84A8A] hover:underline">+20 12 76417277</a>
                                 </div>
                             </div>
 

@@ -99,7 +99,7 @@ const Contact = () => {
                 {/* Contact Cards */}
                 <div className="space-y-6">
                   <motion.a
-                    href="tel:+201018405310"
+                    href="tel:+201276417277"
                     whileHover={{ x: 5 }}
                     className="flex items-center gap-4 p-6 rounded-2xl bg-white/80 border border-[#E84A8A]/10 hover:border-[#5CC5B5]/30 hover:shadow-lg transition-[border-color,box-shadow] duration-300 group"
                   >
@@ -108,7 +108,7 @@ const Contact = () => {
                     </div>
                     <div>
                       <p className="text-sm text-[#7B4B94]/60 font-medium mb-1">Call Us</p>
-                      <p className="text-[#7B4B94] font-bold text-lg">+20 10 18405310</p>
+                      <p className="text-[#7B4B94] font-bold text-lg">+20 12 76417277</p>
 
                     </div>
                   </motion.a>

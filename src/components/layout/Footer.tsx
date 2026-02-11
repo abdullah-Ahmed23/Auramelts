@@ -23,10 +23,10 @@ const Footer = () => {
             </p>
             <div className="space-y-2">
               <a
-                href="tel:+201018405310"
+                href="tel:+201276417277"
                 className="font-body font-bold text-lg text-primary hover:text-primary/80 transition-colors flex items-center gap-2"
               >
-                +20 10 18405310
+                +20 12 76417277
               </a>
               <p className="text-sm text-gray-400">Cairo, Egypt</p>
             </div>

@@ -93,7 +93,7 @@ const ContactSection = () => {
                         {/* Contact Details */}
                         <div className="space-y-6">
                             <motion.a
-                                href="tel:+201018405310"
+                                href="tel:+201276417277"
                                 whileHover={{ x: 5 }}
                                 className="flex items-center gap-4 p-4 rounded-2xl bg-white/80 border border-[#E84A8A]/10 hover:border-[#E84A8A]/30 transition-colors duration-300 group"
                             >
@@ -102,7 +102,7 @@ const ContactSection = () => {
                                 </div>
                                 <div>
                                     <p className="text-sm text-[#7B4B94]/60 font-medium">Phone</p>
-                                    <p className="text-[#7B4B94] font-semibold">+20 10 18405310</p>
+                                    <p className="text-[#7B4B94] font-semibold">+20 12 76417277</p>
                                 </div>
                             </motion.a>
                         </div>
