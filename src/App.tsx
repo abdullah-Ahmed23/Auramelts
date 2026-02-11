@@ -15,6 +15,7 @@ import About from "./pages/About";
 import FAQ from "./pages/FAQ";
 import Blog from "./pages/Blog";
 import Contact from "./pages/Contact";
+import Privacy from "./pages/Privacy";
 import NotFound from "./pages/NotFound";
 import OrderConfirmation from "./pages/OrderConfirmation";
 import AdminLayout from "./components/admin/AdminLayout";
@@ -53,6 +54,7 @@ const AnimatedRoutes = () => {
         <Route path="/faq" element={<FAQ />} />
         <Route path="/blog" element={<Blog />} />
         <Route path="/contact" element={<Contact />} />
+        <Route path="/privacy" element={<Privacy />} />
         <Route path="/order-confirmation" element={<OrderConfirmation />} />
 
         {/* Admin Auth */}
