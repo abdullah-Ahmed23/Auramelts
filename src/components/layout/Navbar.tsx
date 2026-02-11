@@ -484,7 +484,7 @@ const Navbar = () => {
             </div>
 
             {/* Fun Footer Slogan */}
-            <div className="p-6 text-center text-[10px] font-bold uppercase tracking-[0.3em] text-[#7B4B94]/40 shrink-0">
+            <div className="p-10 text-center text-[10px] font-bold uppercase tracking-[0.3em] text-[#7B4B94]/40 shrink-0">
               Handcrafted with love • Aura Melts 2026
             </div>
           </motion.div>

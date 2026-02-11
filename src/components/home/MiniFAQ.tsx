@@ -10,7 +10,7 @@ const faqs = [
     },
     {
         q: 'How long do your candles burn?',
-        a: 'Burn times vary by size: Small (4oz) — approx. 25 hours, Medium (8oz) — approx. 50 hours, Large (12oz) — approx. 75 hours.',
+        a: 'Burn times vary by size: Small (4oz) — 2.5 hours, Medium (8oz) — 4 hours, Large (12oz) — 6 to 8 hours.',
     },
     {
         q: 'Are your products vegan?',

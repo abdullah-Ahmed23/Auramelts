@@ -148,19 +148,19 @@ const Testimonials = () => {
             dragElastic={0.2}
             style={{ x }}
             animate={{
-              x: [-100, -100 * (testimonials.length + 1)],
+              x: [0, -400 * testimonials.length],
             }}
             transition={{
               x: {
-                duration: testimonials.length * 3,
-                ease: "linear",
                 repeat: Infinity,
                 repeatType: "loop",
+                duration: 30,
+                ease: "linear",
               },
             }}
           >
             {loopedTestimonials.map((review: any, index: number) => (
-              <div key={`${review.id}-${index}`} className="flex-shrink-0 w-[90%] md:w-[400px] px-4">
+              <div key={`${review.id}-${index}`} className="flex-shrink-0 w-[85vw] md:w-[400px] px-4">
                 <TestimonialCard review={review} />
               </div>
             ))}

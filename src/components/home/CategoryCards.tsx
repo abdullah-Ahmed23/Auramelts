@@ -1,12 +1,12 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
-import { motion } from 'framer-motion';
+import { motion, Variants } from 'framer-motion';
 import { supabase } from '@/lib/supabase';
 import { ImageOptimizer } from '@/components/ImageOptimizer';
 
-const containerVariants = {
+const containerVariants: Variants = {
   hidden: { opacity: 0 },
   visible: {
     opacity: 1,
@@ -16,7 +16,7 @@ const containerVariants = {
   }
 };
 
-const cardVariants = {
+const cardVariants: Variants = {
   hidden: { opacity: 0, y: 30 },
   visible: {
     opacity: 1,
@@ -26,6 +26,11 @@ const cardVariants = {
 };
 
 const CategoryCards = () => {
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const [isDragging, setIsDragging] = useState(false);
+  const [startX, setStartX] = useState(0);
+  const [scrollLeft, setScrollLeft] = useState(0);
+  const [activeDot, setActiveDot] = useState(0);
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
 
   const { data: categories = [] } = useQuery({
@@ -37,6 +42,54 @@ const CategoryCards = () => {
     },
     staleTime: 1000 * 60 * 10,
   });
+
+  const handleMouseDown = (e: React.MouseEvent) => {
+    if (!scrollContainerRef.current) return;
+    setIsDragging(true);
+    setStartX(e.pageX - scrollContainerRef.current.offsetLeft);
+    setScrollLeft(scrollContainerRef.current.scrollLeft);
+  };
+
+  const handleMouseLeave = () => {
+    setIsDragging(false);
+  };
+
+  const handleMouseUp = () => {
+    setIsDragging(false);
+  };
+
+  const handleMouseMove = (e: React.MouseEvent) => {
+    if (!isDragging || !scrollContainerRef.current) return;
+    e.preventDefault();
+    const x = e.pageX - scrollContainerRef.current.offsetLeft;
+    const walk = (x - startX) * 2; // Scroll-fast multiplier
+    scrollContainerRef.current.scrollLeft = scrollLeft - walk;
+  };
+
+  const handleScroll = () => {
+    if (!scrollContainerRef.current) return;
+    const scrollPosition = scrollContainerRef.current.scrollLeft;
+    // Card width is 90vw + 16px gap (approx)
+    const cardWidth = scrollContainerRef.current.offsetWidth * 0.9 + 16;
+    const index = Math.round(scrollPosition / cardWidth);
+    // Clamp index to valid range
+    setActiveDot(Math.min(index, categories.length - 1));
+  };
+
+  const scrollToCategory = (index: number) => {
+    if (!scrollContainerRef.current) return;
+    const cardWidth = scrollContainerRef.current.offsetWidth * 0.8; // Approx 80vw + gap
+    // Use card width + gap (16px/1rem) for more precise scrolling
+    const gap = 16;
+    const targetScroll = index * (scrollContainerRef.current.offsetWidth < 768 ? (window.innerWidth * 0.8 + gap) : 300); // Rough estimation
+
+    // Better simple approach for now: scroll to the Nth child
+    const child = scrollContainerRef.current.children[index] as HTMLElement;
+    if (child) {
+      child.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+    }
+    setActiveDot(index);
+  };
 
   return (
     <section className="relative py-24 md:py-32 overflow-hidden bg-[#FDF8F4]">
@@ -66,9 +119,15 @@ const CategoryCards = () => {
           </motion.div>
         </div>
 
-        {/* Grid */}
+        {/* Grid / Carousel */}
         <motion.div
-          className="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-6"
+          ref={scrollContainerRef}
+          onMouseDown={handleMouseDown}
+          onMouseLeave={handleMouseLeave}
+          onMouseUp={handleMouseUp}
+          onMouseMove={handleMouseMove}
+          onScroll={handleScroll}
+          className={`flex overflow-x-auto snap-x snap-mandatory gap-4 pb-8 -mx-4 px-[5%] md:grid md:grid-cols-3 md:gap-6 md:pb-0 md:mx-0 md:px-0 no-scrollbar cursor-grab ${isDragging ? 'cursor-grabbing snap-none' : ''}`}
           variants={containerVariants}
           initial="hidden"
           whileInView="visible"
@@ -81,16 +140,17 @@ const CategoryCards = () => {
               <motion.div
                 key={cat.id}
                 variants={cardVariants}
-                className="h-full"
+                className="h-[400px] min-w-[280px] w-[90vw] md:w-auto md:h-full snap-center flex-shrink-0"
               >
                 <Link
                   to={`/products?category=${cat.slug}`}
                   onMouseEnter={() => setHoveredIndex(i)}
                   onMouseLeave={() => setHoveredIndex(null)}
-                  className="group relative block h-full"
+                  className="group relative block h-full select-none"
+                  draggable="false"
                 >
                   <motion.div
-                    className="relative h-full min-h-[200px] md:min-h-[260px] p-6 md:p-8 rounded-3xl bg-white overflow-hidden border border-[#E84A8A]/20 shadow-lg shadow-[#E84A8A]/5"
+                    className="relative h-full min-h-[260px] p-6 md:p-8 rounded-3xl bg-white overflow-hidden border border-[#E84A8A]/20 shadow-lg shadow-[#E84A8A]/5"
                     whileHover={{
                       y: -10,
                       boxShadow: "0 20px 40px -10px rgba(232, 74, 138, 0.15)",
@@ -98,7 +158,7 @@ const CategoryCards = () => {
                     }}
                   >
                     {/* Image Background */}
-                    {cat.image && (
+                    {cat.image ? (
                       <div className="absolute inset-0 z-0">
                         <ImageOptimizer
                           src={cat.image}
@@ -109,10 +169,9 @@ const CategoryCards = () => {
                           priority={i < 3}
                           sizes="(max-width: 768px) 50vw, 33vw"
                         />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-60" />
                       </div>
-                    )}
-
-                    {!cat.image && (
+                    ) : (
                       <div className="absolute inset-0 bg-gradient-to-br from-[#5CC5B5]/5 to-[#E84A8A]/5 opacity-60" />
                     )}
 
@@ -137,7 +196,7 @@ const CategoryCards = () => {
                       )}
 
                       {/* Glass Info Box */}
-                      <div className="bg-white/90 backdrop-blur-md border border-white/50 p-4 rounded-2xl shadow-sm translate-y-2 group-hover:translate-y-0 transition-transform duration-300">
+                      <div className={`backdrop-blur-md border p-4 rounded-2xl shadow-sm translate-y-2 group-hover:translate-y-0 transition-transform duration-300 ${cat.image ? 'bg-white/90 border-white/50' : 'bg-white/80 border-[#E84A8A]/10'}`}>
                         <div className="flex items-center justify-between">
                           <div>
                             <h3 className="text-xl font-bold text-[#2A2A2A] leading-tight">
@@ -160,6 +219,18 @@ const CategoryCards = () => {
           })}
         </motion.div>
 
+        {/* Navigation Dots (Mobile Only) */}
+        <div className="flex md:hidden justify-center gap-2 mt-4 mb-2">
+          {categories.map((_: any, index: number) => (
+            <button
+              key={index}
+              onClick={() => scrollToCategory(index)}
+              className={`w-2 h-2 rounded-full transition-all duration-300 ${activeDot === index ? 'w-6 bg-[#E84A8A]' : 'bg-[#E84A8A]/30'}`}
+              aria-label={`Go to slide ${index + 1}`}
+            />
+          ))}
+        </div>
+
         {/* View All Button */}
         <div
           className="mt-12 md:mt-16 text-center"
@@ -179,8 +250,8 @@ const CategoryCards = () => {
             </Link>
           </motion.div>
         </div>
-      </div>
-    </section>
+      </div >
+    </section >
   );
 };
 
